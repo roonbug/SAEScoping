@@ -543,7 +543,7 @@ def _plot_overlap_curves_by_layer(
                 legend_handles.append(line)
                 legend_labels.append(label)
 
-        ax.set_xscale("log")
+        # ax.set_xscale("log")
         ax.set_ylim(0, 1)
         ax.set_title(f"Layer {layer}", fontsize=9)
         ax.tick_params(labelsize=6)

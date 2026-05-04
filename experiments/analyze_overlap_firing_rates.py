@@ -57,7 +57,7 @@ from safetensors.torch import load_file
 
 
 CACHE_ROOT = Path(__file__).parent / ".cache"
-DEFAULT_MODEL_SLUG = "google--gemma-3-12b-it"
+DEFAULT_MODEL_SLUG = "google--gemma-3-12b-it--width_16k"
 K_PCTS = list(range(1, 31))  # 1 % … 30 %
 
 
@@ -636,7 +636,7 @@ def main():
     domain_b = args.domain_b
 
     output_dir = Path(args.output_dir) if args.output_dir else \
-        Path(f"results/overlap_analysis_{domain_a}_vs_{domain_b}")
+        Path(f"results/overlap_analysis_{domain_a}_vs_{domain_b}_{args.model_slug}")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     k_pcts = [float(x) for x in args.k_pcts.split(",")] if args.k_pcts else K_PCTS

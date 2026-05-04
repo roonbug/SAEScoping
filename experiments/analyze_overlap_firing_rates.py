@@ -86,7 +86,7 @@ def discover_pairs(domain_a: str, domain_b: str, model_slug: str) -> list[dict]:
             "rel": str(rel),
             "path_a": path_a,
             "path_b": path_b,
-            "label": f"L{layer} {sae_tag.split('--', 1)[1]}",
+            "label": f"L{layer} {sae_tag.split('_')[1]}",
         })
     pairs.sort(key=lambda x: (x["layer"], x["sae_tag"]))
     return pairs
@@ -636,7 +636,7 @@ def main():
     domain_b = args.domain_b
 
     output_dir = Path(args.output_dir) if args.output_dir else \
-        Path(f"results/overlap_analysis_{domain_a}_vs_{domain_b}_{args.model_slug}")
+        Path(f"results/overlap_analysis_{domain_a}_vs_{domain_b}_{args.model_slug}_{args.sae_release or 'no_sae'}")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     k_pcts = [float(x) for x in args.k_pcts.split(",")] if args.k_pcts else K_PCTS

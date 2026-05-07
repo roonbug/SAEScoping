@@ -57,8 +57,10 @@ from safetensors.torch import load_file
 
 
 CACHE_ROOT = Path(__file__).parent / ".cache"
-DEFAULT_MODEL_SLUG = "google--gemma-3-12b-it--width_16k"
+DEFAULT_MODEL_SLUG = "google--gemma-2-9b-it"
 K_PCTS = list(range(1, 31))  # 1 % … 30 %
+DEFAULT_SURVIVAL_DOMAINS = ["biology", "math", "chemistry", "physics"]
+DOMAIN_COLORS = {"biology": "steelblue", "math": "salmon", "chemistry": "seagreen", "physics": "mediumpurple"}
 
 
 # ── Discovery ─────────────────────────────────────────────────────────────────
@@ -90,6 +92,41 @@ def discover_pairs(domain_a: str, domain_b: str, model_slug: str) -> list[dict]:
         })
     pairs.sort(key=lambda x: (x["layer"], x["sae_tag"]))
     return pairs
+
+
+def load_survival_dists(
+    domains: list[str], model_slug: str
+) -> dict[str, dict[str, np.ndarray]]:
+    """Load firing rate distributions for all domains, keyed by layer label."""
+    # Seed (sae_tag, full rel) from the first available domain
+    rel_by_tag: dict[str, Path] = {}
+    for domain in domains:
+        root = CACHE_ROOT / f"stemqa_{domain}" / "ignore_padding_True" / model_slug
+        if not root.exists():
+            continue
+        for path in sorted(root.rglob("firing_rates.safetensors")):
+            rel = path.parent.relative_to(root)
+            tag = rel.parts[0]
+            if tag not in rel_by_tag:
+                rel_by_tag[tag] = rel
+        break  # one domain is enough to enumerate layers
+
+    dists_by_label: dict[str, dict[str, np.ndarray]] = {}
+    for sae_tag, rel in sorted(rel_by_tag.items()):
+        m = re.match(r"layer_(\d+)", sae_tag)
+        layer = int(m.group(1)) if m else -1
+        label = f"L{layer} {sae_tag.split('--')[1] if '--' in sae_tag else sae_tag.split('_')[3]}"
+        domain_dists: dict[str, np.ndarray] = {}
+        for domain in domains:
+            path = (
+                CACHE_ROOT / f"stemqa_{domain}" / "ignore_padding_True"
+                / model_slug / rel / "firing_rates.safetensors"
+            )
+            if path.exists():
+                domain_dists[domain] = load_file(str(path))["distribution"].float().numpy()
+        if domain_dists:
+            dists_by_label[label] = domain_dists
+    return dists_by_label
 
 
 def load_dists(path_a: Path, path_b: Path) -> tuple[np.ndarray, np.ndarray] | None:
@@ -295,6 +332,63 @@ def plot_scatters(results: list[dict], domain_a: str, domain_b: str, output_dir:
     fig.suptitle(f"Overlap neuron firing rates (above diagonal = {domain_b}-dominant)", fontsize=11)
     plt.tight_layout()
     path = output_dir / "scatter.png"
+    fig.savefig(path, dpi=150, bbox_inches="tight")
+    print(f"Saved: {path}")
+    plt.close(fig)
+
+
+# ── Firing-rate survival curves ───────────────────────────────────────────────
+
+def plot_firing_rate_survival(
+    survival_dists_by_label: dict[str, dict[str, np.ndarray]],
+    output_dir: Path,
+    n_thresholds: int = 300,
+) -> None:
+    """
+    Per-layer survival curves: x = firing-rate threshold, y = # neurons active at or above that threshold.
+    Covers the full range from the smallest nonzero rate to the max across all domains.
+    """
+    labels = list(survival_dists_by_label.keys())
+    n = len(labels)
+    cols = min(n, 6)
+    rows = (n + cols - 1) // cols
+    fig, axes = plt.subplots(rows, cols, figsize=(4 * cols, 3 * rows), squeeze=False)
+
+    for i, label in enumerate(labels):
+        ax = axes[i // cols][i % cols]
+        domain_dists = survival_dists_by_label[label]
+
+        pos_vals = [d[d > 0] for d in domain_dists.values()]
+        lo = min((v.min() for v in pos_vals if len(v)), default=1e-6)
+        hi = max(d.max() for d in domain_dists.values())
+        thresholds = np.geomspace(lo, hi, n_thresholds)
+
+        for domain, dist in domain_dists.items():
+            color = DOMAIN_COLORS.get(domain, None)
+            counts = np.array([(dist >= t).sum() for t in thresholds])
+            ax.plot(thresholds, counts, color=color, lw=1.5, label=domain)
+
+        ax.set_xscale("log")
+        ax.set_title(label, fontsize=8)
+        ax.set_xlabel("firing rate threshold", fontsize=7)
+        if i % cols == 0:
+            ax.set_ylabel("# neurons active", fontsize=7)
+        ax.tick_params(labelsize=6)
+
+    handles, lbls = axes[0][0].get_legend_handles_labels()
+    fig.legend(handles, lbls, loc="upper right", fontsize=9, ncol=2)
+
+    for j in range(n, rows * cols):
+        axes[j // cols][j % cols].set_visible(False)
+
+    domain_names = ", ".join(next(iter(survival_dists_by_label.values())).keys())
+    fig.suptitle(
+        f"Firing-rate survival curves: {domain_names}\n"
+        "# neurons with firing rate ≥ threshold (log x-axis)",
+        fontsize=10,
+    )
+    plt.tight_layout(rect=[0, 0, 1, 0.94])
+    path = output_dir / "firing_rate_survival.png"
     fig.savefig(path, dpi=150, bbox_inches="tight")
     print(f"Saved: {path}")
     plt.close(fig)
@@ -630,6 +724,11 @@ def main():
             "(e.g. layer_20--width_262k--l0_small → layer_20_width_262k_l0_small)."
         ),
     )
+    parser.add_argument(
+        "--survival-domains", type=str, default=",".join(DEFAULT_SURVIVAL_DOMAINS),
+        help="Comma-separated domains to include in the firing-rate survival plot "
+             f"(default: {','.join(DEFAULT_SURVIVAL_DOMAINS)})",
+    )
     args = parser.parse_args()
 
     domain_a = args.domain_a
@@ -656,6 +755,7 @@ def main():
     threshold_results = []
     sweep_by_label: dict[str, list[dict]] = {}
     subspace_by_label: dict[str, list[dict]] = {}
+    dists_by_label: dict[str, tuple[np.ndarray, np.ndarray]] = {}
 
     for p in pairs:
         print(f"\nLoading {p['label']} ...")
@@ -664,6 +764,7 @@ def main():
             print(f"  [SKIP] SAE width mismatch")
             continue
         dist_a, dist_b = dists
+        dists_by_label[p["label"]] = (dist_a, dist_b)
 
         r = analyze_threshold(p["label"], dist_a, dist_b, domain_a, domain_b, args.threshold)
         if r is not None:
@@ -690,6 +791,12 @@ def main():
         plot_ratio_histograms(threshold_results, domain_a, domain_b, output_dir)
         plot_layer_summary(threshold_results, domain_a, domain_b, output_dir)
         plot_scatters(threshold_results, domain_a, domain_b, output_dir)
+
+    survival_domains = [d.strip() for d in args.survival_domains.split(",")]
+    print(f"\nLoading survival dists for: {survival_domains}")
+    survival_dists_by_label = load_survival_dists(survival_domains, args.model_slug)
+    if survival_dists_by_label:
+        plot_firing_rate_survival(survival_dists_by_label, output_dir)
 
     if sweep_by_label:
         sweep_json = {

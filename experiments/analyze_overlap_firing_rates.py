@@ -57,7 +57,7 @@ from safetensors.torch import load_file
 
 
 CACHE_ROOT = Path(__file__).parent / ".cache"
-DEFAULT_MODEL_SLUG = "google--gemma-2-9b-it"
+DEFAULT_MODEL_SLUG = "google--gemma-3-12b-it--width_262k"
 K_PCTS = list(range(1, 31))  # 1 % … 30 %
 DEFAULT_SURVIVAL_DOMAINS = ["biology", "math", "chemistry", "physics"]
 DOMAIN_COLORS = {"biology": "steelblue", "math": "salmon", "chemistry": "seagreen", "physics": "mediumpurple"}
@@ -73,12 +73,23 @@ def discover_pairs(domain_a: str, domain_b: str, model_slug: str) -> list[dict]:
         if not root.exists():
             raise FileNotFoundError(f"{name} cache not found: {root}")
 
+    # print(root_a, root_b)
+    # print(path_a, path_b)
     pairs = []
     for path_a in sorted(root_a.rglob("firing_rates.safetensors")):
+        print('PATH_A', path_a)
         rel = path_a.parent.relative_to(root_a)
         path_b = root_b / rel / "firing_rates.safetensors"
         if not path_b.exists():
-            continue
+            print("First path_b option doesn't exist, trying n10000 subdir...")
+            path_b = root_b / rel / "n10000" / "firing_rates.safetensors"
+            if not path_b.exists():
+                print("Second path_b option doesn't exist, trying subdir...")
+                path_b = root_b / str(rel).split("n10000")[0] / "firing_rates.safetensors"
+                if not path_b.exists():
+                    print(f'  [SKIP] no match for {rel}')
+                    continue
+        print('PATH_B', path_b)
         sae_tag = rel.parts[0]
         m = re.match(r"layer_(\d+)", sae_tag)
         layer = int(m.group(1)) if m else -1
@@ -91,6 +102,7 @@ def discover_pairs(domain_a: str, domain_b: str, model_slug: str) -> list[dict]:
             "label": f"L{layer} {sae_tag.split('--')[1] if '--' in sae_tag else sae_tag.split('_')[3]}",
         })
     pairs.sort(key=lambda x: (x["layer"], x["sae_tag"]))
+    assert len(pairs) > 0, f"No overlapping pairs found for {domain_a} vs {domain_b} in model {model_slug}"
     return pairs
 
 
@@ -103,6 +115,7 @@ def load_survival_dists(
     for domain in domains:
         root = CACHE_ROOT / f"stemqa_{domain}" / "ignore_padding_True" / model_slug
         if not root.exists():
+            print(f"  [SKIP] no cache for {domain}: {root}")
             continue
         for path in sorted(root.rglob("firing_rates.safetensors")):
             rel = path.parent.relative_to(root)
@@ -124,6 +137,15 @@ def load_survival_dists(
             )
             if path.exists():
                 domain_dists[domain] = load_file(str(path))["distribution"].float().numpy()
+            else:
+                path = (
+                    CACHE_ROOT / f"stemqa_{domain}" / "ignore_padding_True"
+                    / model_slug / rel / "n10000" / "firing_rates.safetensors"
+                )
+                if path.exists():
+                    domain_dists[domain] = load_file(str(path))["distribution"].float().numpy()
+                else:
+                    print(f"  [SKIP] {domain} missing for {label}: expected at {path}")
         if domain_dists:
             dists_by_label[label] = domain_dists
     return dists_by_label
@@ -366,7 +388,7 @@ def plot_firing_rate_survival(
         for domain, dist in domain_dists.items():
             color = DOMAIN_COLORS.get(domain, None)
             counts = np.array([(dist >= t).sum() for t in thresholds])
-            ax.plot(thresholds, counts, color=color, lw=1.5, label=domain)
+            ax.plot(thresholds, counts, color=color, lw=1.5, label=domain, alpha=0.6)
 
         ax.set_xscale("log")
         ax.set_title(label, fontsize=8)
@@ -735,7 +757,7 @@ def main():
     domain_b = args.domain_b
 
     output_dir = Path(args.output_dir) if args.output_dir else \
-        Path(f"results/{args.model_slug}/{args.sae_release or 'no_sae'}/overlap_analysis_{domain_a}_vs_{domain_b}")
+        Path(f"results/{args.model_slug}/{args.sae_release or 'no_sae'}/overlap_analysis_{domain_a}/{domain_b}")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     k_pcts = [float(x) for x in args.k_pcts.split(",")] if args.k_pcts else K_PCTS

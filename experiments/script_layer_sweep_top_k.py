@@ -17,7 +17,7 @@ Cache layout (matches existing convention):
 
 Available SAE layers:
     gemma-2-9b-it   : 9, 20, 31  (gemma-scope-9b-it-res-canonical, width_16k)
-    gemma-3-12b-it  : 0–47       (gemma-scope-2-12b-it-res-all, width_16k l0_small)
+    gemma-3-12b-it  : 0–47       (gemma-scope-2-12b-it-res-all, width_16k l0_small/l0_medium)
 
 Usage:
     # compute all missing then analyze:
@@ -76,7 +76,7 @@ GEMMA2_CFG: dict[str, Any] = dict(
     model_name="google/gemma-2-9b-it",
     sae_release="gemma-scope-9b-it-res-canonical",  # only layers 9, 20, 31 available
     model_slug="google--gemma-2-9b-it",
-    layers=[9, 20, 31],
+    layers=[31],
     sae_id=lambda L: f"layer_{L}/width_16k/canonical",
     hookpoint=lambda L: f"model.layers.{L}",
     layer_tag=lambda L: f"layer_{L}--width_16k--canonical",
@@ -85,12 +85,12 @@ GEMMA2_CFG: dict[str, Any] = dict(
 def _gemma3_cfg(width: str = "262k") -> dict[str, Any]:
     return dict(
         model_name="google/gemma-3-12b-it",
-        sae_release="gemma-scope-2-12b-it-res-all",
+        sae_release="gemma-scope-2-12b-it-res",
         model_slug=f"google--gemma-3-12b-it--width_{width}",
         layers=list(range(48)),
-        sae_id=lambda L: f"layer_{L}_width_{width}_l0_small",
+        sae_id=lambda L: f"layer_{L}_width_{width}_l0_medium",
         hookpoint=lambda L: f"model.language_model.layers.{L}",
-        layer_tag=lambda L: f"layer_{L}--width_{width}--l0_small",
+        layer_tag=lambda L: f"layer_{L}--width_{width}--l0_medium",
     )
 
 GEMMA3_CFG = _gemma3_cfg("262k")
@@ -353,15 +353,10 @@ def run_analyze(
         dists = layer_dists[layer]
         n = next(iter(dists.values())).numel()
         ks = default_ks(n)
-        ks_np = ks.numpy()
         for a in sorted(dists):
             for b in sorted(dists):
                 curve = cross_domain_coverage_curve(dists[a], dists[b], ks)
                 auc = cross_coverage_auc(curve, ks, n)
-                # Also record coverage at k=15% of SAE width as a point metric
-                k_15pct = max(1, int(0.15 * n))
-                k_15pct_idx = int(np.searchsorted(ks_np, k_15pct))
-                k_15pct_idx = min(k_15pct_idx, len(curve) - 1)
                 coverage_rows.append(
                     dict(
                         model=model_slug,
@@ -369,14 +364,13 @@ def run_analyze(
                         selector=a,
                         target=b,
                         auc=round(auc, 6),
-                        coverage_at_15pct=round(float(curve[k_15pct_idx].item()), 6),
                     )
                 )
 
     coverage_csv = output_dir / f"cross_domain_coverage_{model_slug}.csv"
     with open(coverage_csv, "w", newline="") as f:
         writer = csv.DictWriter(
-            f, fieldnames=["model", "layer", "selector", "target", "auc", "coverage_at_15pct"]
+            f, fieldnames=["model", "layer", "selector", "target", "auc"]
         )
         writer.writeheader()
         writer.writerows(coverage_rows)

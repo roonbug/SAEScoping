@@ -20,7 +20,7 @@ from pathlib import Path
 import matplotlib
 import numpy as np
 import torch
-
+import os
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from safetensors import safe_open
@@ -37,8 +37,8 @@ from sae_scoping.data_science import default_ks
 _CACHE_ROOT = (
     Path("/data/aruna_sankaranarayanan/SAEScoping/experiments/.cache")
 )
-_MODEL_SLUG = "google--gemma-3-12b-it--width_16k"
-_LAYER_TAG  = "layer_{i}--width_16k--l0_small"
+_MODEL_SLUG = "google--gemma-3-12b-it--width_262k"
+_LAYER_TAG  = "layer_{i}--width_262k--l0_small"
 _N_SAMPLES  = 10_000
 
 DOMAINS = ["biology", "chemistry", "math", "physics"]
@@ -155,9 +155,17 @@ def run(output_path: Path, device: torch.device) -> None:
     for layer in layers:
         # Load all domain distributions for this layer
         dists: dict[str, torch.Tensor | None] = {}
+        path_exists = True
         for dom in DOMAINS:
             p = _firing_rate_path(dom, layer)
+            if not os.path.exists(p):
+                print(f"  [layer {layer:2d}] missing {dom} — skipping layer")
+                path_exists = False
+                break
             dists[dom] = _load_normalized(p, device)
+
+        if not path_exists:
+            continue
 
         missing = [d for d, v in dists.items() if v is None]
         if missing:

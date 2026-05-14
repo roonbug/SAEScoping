@@ -9,8 +9,8 @@ Each entry in PERF_DATA specifies:
 Computes cross-domain coverage AUC(scoped→ood) from the exact SAE cache given,
 then runs separate OLS regressions against gts and quality deltas.
 
-CODE domain is excluded (no stemqa_code cache).
 Physics-scoped OOD is excluded (all null).
+STEM→code pairs for gemma-3-12b are absent from the coding cache (different layer/width).
 
 Usage:
     python experiments/analyze_overlap_vs_performance.py
@@ -18,6 +18,12 @@ Usage:
     python experiments/analyze_overlap_vs_performance.py --output-dir results/reg
 
 Input: SAE firing-rate distributions for domain A and domain B.
+
+  Optional --firing-rate-threshold (default 0.0 = no filtering):
+  Before computing any overlap metric, the neuron set is restricted to {i : A[i] ≥ threshold},
+  mirroring the stage_prune step in the scoping pipeline. Both distributions are renormalized
+  to sum to 1 within the active set before metrics are computed. This makes the metrics measure
+  overlap specifically among neurons that the scoped domain actually uses.
 
   Each distribution is a 1-D vector of length N (SAE width, e.g. 262,144) where entry i is the fraction of tokens (across all domain A
   examples) that activated feature i. Both distributions sum to 1.
@@ -50,9 +56,23 @@ Input: SAE firing-rate distributions for domain A and domain B.
    (the 1/rank weighting gives strong signal when the same feature is #1 in both domains).
 
   ---
+  Metric 3: Threshold-coverage AUC
+
+  1. Sort features by A's firing rate (descending).
+  2. Sweep a threshold t linearly from 0 to max(A) using n_thresholds steps.
+  3. At each t, define A's active set: S(t) = {i : A[i] ≥ t}.
+     coverage(t) = Σ_{i ∈ S(t)} B[i]  (fraction of B's mass accounted for by A's active features)
+  4. Compute AUC of coverage(t) vs t, normalised by max(A) × 1.0 (the area of a flat curve at coverage=1).
+
+  Interpretation: High value → A's above-threshold features carry most of B's activation mass even as the
+  threshold rises; the domains share features that are important in both, not just features active in A.
+  Unlike the top-k metrics the x-axis is a firing-rate threshold rather than feature count, making it
+  sensitive to features that are highly active in A but absent in B.
+
+  ---
   Regression:
-  Both metrics are regressed separately against OOD performance degradation (gts delta and quality delta) using OLS, to test whether
-  higher feature overlap predicts less OOD degradation.
+  All three metrics are regressed separately against OOD performance degradation (gts delta and quality
+  delta) using OLS, to test whether higher feature overlap predicts less OOD degradation.
 """
 from __future__ import annotations
 
@@ -126,15 +146,19 @@ PERF_DATA: list[tuple[str, str, int, str, str, float, float]] = [
     ("biology",   "chemistry", 31, _SAE_BIO_9B,   "gemma-2-9b",  -16.5,  -7.0),
     ("biology",   "physics",   31, _SAE_BIO_9B,   "gemma-2-9b",  -19.0,  -9.0),
     ("biology",   "math",      31, _SAE_BIO_9B,   "gemma-2-9b",  -18.0, -10.0),
+    ("biology",   "code",      31, _SAE_BIO_9B,   "gemma-2-9b",     -4,  -4),
     ("chemistry", "physics",   31, _SAE_CHEM_9B,  "gemma-2-9b",   -8.0,  -5.0),
     ("chemistry", "math",      31, _SAE_CHEM_9B,  "gemma-2-9b",   -5.0,  -4.0),
     ("chemistry", "biology",   31, _SAE_CHEM_9B,  "gemma-2-9b",  -17.0,  -9.3),
+    ("chemistry", "code",      31, _SAE_CHEM_9B,  "gemma-2-9b",   -6.5,    -6.5),
     ("math",      "physics",   31, _SAE_MATH_9B,  "gemma-2-9b",  -13.0,  -9.0),
     ("math",      "chemistry", 31, _SAE_MATH_9B,  "gemma-2-9b",  -23.0, -14.0),
     ("math",      "biology",   31, _SAE_MATH_9B,  "gemma-2-9b",  -47.0, -34.0),
+    ("math",      "code",      31, _SAE_MATH_9B,  "gemma-2-9b",  -5.5, -5.5),
     ("physics",   "chemistry", 31, _SAE_PHYS_9B,  "gemma-2-9b",   -7.5,  -4.3),
     ("physics",   "math",      31, _SAE_PHYS_9B,  "gemma-2-9b",   -9.0,  -6.0),
     ("physics",   "biology",   31, _SAE_PHYS_9B,  "gemma-2-9b",  -23.0, -13.0),
+    ("physics",      "code",   31, _SAE_PHYS_9B,  "gemma-2-9b",  -6.5,   -6.5),
     ("code",      "chemistry", 31, _SAE_CODE_9B,  "gemma-2-9b",  -35.0, -34.0),
     ("code",      "math",      31, _SAE_CODE_9B,  "gemma-2-9b",  -40.0, -35.0),
     ("code",      "biology",   31, _SAE_CODE_9B,  "gemma-2-9b",  -57.0, -50.0),
@@ -158,6 +182,10 @@ PAIR_STYLES: dict[tuple[str, str], tuple[str, str]] = {
     ("code",      "physics"):   ("#6b21a8", "s"),
     ("code",      "chemistry"): ("#a855f7", "^"),
     ("code",      "math"):      ("#d8b4fe", "D"),
+    ("biology",   "code"):      ("#fdae6b", "o"),
+    ("chemistry", "code"):      ("#fd8d3c", "s"),
+    ("math",      "code"):      ("#e6550d", "^"),
+    ("physics",   "code"):      ("#a63603", "D"),
 }
 
 _N_SAMPLES = 10_000
@@ -166,6 +194,23 @@ _N_SAMPLES = 10_000
 _CODING_SAE_MODEL_SLUG: dict[str, str] = {
     "coding_gemma3_12b": "google--gemma-3-12b-it",
     "coding_gemma2_9b":  "google--gemma-2-9b-it",
+}
+
+# Firing-rate threshold per (model, scoped_domain) — mirrors the stage_prune threshold
+# used when the scoping experiment was run.  Only neurons with A[i] >= threshold are
+# included when computing overlap metrics.  Set to 0.0 to disable filtering.
+FIRING_RATE_THRESHOLDS: dict[tuple[str, str], float] = {
+    # ── gemma-3-12b ──────────────────────────────────────────────────────────
+    ("gemma-3-12b", "biology"):   5e-5,
+    ("gemma-3-12b", "chemistry"): 6e-7,
+    ("gemma-3-12b", "math"):      1e-4,
+    ("gemma-3-12b", "code"):      3e-4,
+    # ── gemma-2-9b ───────────────────────────────────────────────────────────
+    ("gemma-2-9b",  "biology"):   7e-5,
+    ("gemma-2-9b",  "chemistry"): 8e-5,
+    ("gemma-2-9b",  "math"):      1e-4,
+    ("gemma-2-9b",  "physics"):   1e-4,
+    ("gemma-2-9b",  "code"):      1e-4,
 }
 
 
@@ -199,17 +244,28 @@ def _validate_perf_data(data: list[tuple]) -> None:
 # ---------------------------------------------------------------------------
 
 def _domain_cache_path(sae_dir: str, domain: str, n: int = _N_SAMPLES) -> Path:
-    """Replace the 'stemqa_<X>' or coding-SAE component in sae_dir with 'stemqa_<domain>'.
+    """Replace the 'stemqa_<X>' or coding-SAE component in sae_dir with the target domain.
 
     Coding-SAE paths (coding_gemma3_12b, coding_gemma2_9b) lack the model-slug directory
-    that stemqa paths have, so when mapping to a non-code domain we inject the appropriate
-    model slug after 'ignore_padding_True'.
+    that stemqa paths have, so:
+    - coding → STEM: inject the model slug after 'ignore_padding_True'
+    - STEM → code: swap stemqa_<X> for the coding key, drop the model-slug directory
     """
     p = Path(sae_dir)
     dom = domain.lower()
 
+    _slug_to_coding = {v: k for k, v in _CODING_SAE_MODEL_SLUG.items()}
+
     coding_key = next((k for k in _CODING_SAE_MODEL_SLUG if k in str(p)), None)
     is_coding_sae = coding_key is not None
+
+    # For STEM → code: identify which coding key and model-slug dir to use/drop.
+    stem_model_slug = (
+        next((slug for slug in _slug_to_coding if any(part.startswith(slug) for part in p.parts)), None)
+        if not is_coding_sae else None
+    )
+    stem_coding_key = _slug_to_coding.get(stem_model_slug) if stem_model_slug else None
+
     inject_model_slug = is_coding_sae and dom != "code"
     model_slug = _CODING_SAE_MODEL_SLUG.get(coding_key, "") if coding_key else ""
 
@@ -217,8 +273,10 @@ def _domain_cache_path(sae_dir: str, domain: str, n: int = _N_SAMPLES) -> Path:
     replaced = False
     for part in p.parts:
         if part.startswith("stemqa_") and not replaced:
-            new_parts.append(f"stemqa_{dom}")
+            new_parts.append(stem_coding_key if dom == "code" else f"stemqa_{dom}")
             replaced = True
+        elif not is_coding_sae and dom == "code" and stem_model_slug and part.startswith(stem_model_slug):
+            pass  # drop model-slug dir; coding paths don't have it
         elif coding_key and part == coding_key:
             new_parts.append(coding_key if dom == "code" else f"stemqa_{dom}")
             replaced = True
@@ -242,6 +300,37 @@ def _load_normalized(path: Path, device: torch.device) -> torch.Tensor | None:
         dist = f.get_tensor("distribution").float().to(device)
     total = dist.sum().item()
     return (dist / total) if total > 0 else None
+
+
+# ---------------------------------------------------------------------------
+# Threshold masking
+# ---------------------------------------------------------------------------
+
+def _apply_firing_rate_mask(
+    dist_a: torch.Tensor,
+    dist_b: torch.Tensor,
+    threshold: float,
+) -> tuple[torch.Tensor, torch.Tensor, int]:
+    """Restrict to neurons where A[i] >= threshold; renormalize both to sum to 1.
+
+    Returns (masked_a, masked_b, n_active).  If threshold <= 0, returns the
+    originals unchanged (with n_active = len(dist_a)).
+    """
+    if threshold <= 0.0:
+        return dist_a, dist_b, dist_a.numel()
+    mask = dist_a >= threshold
+    da = dist_a[mask]
+    db = dist_b[mask]
+    n_active = int(mask.sum().item())
+    if n_active == 0:
+        return da, db, 0
+    da_sum = da.sum()
+    db_sum = db.sum()
+    if da_sum > 0:
+        da = da / da_sum
+    if db_sum > 0:
+        db = db / db_sum
+    return da, db, n_active
 
 
 # ---------------------------------------------------------------------------
@@ -291,6 +380,36 @@ def _mean_reciprocal_rank_auc(
     return (auc / best_auc).item() if best_auc.item() > 0 else 0.0
 
 
+def _threshold_coverage(
+    dist_a: torch.Tensor,
+    dist_b: torch.Tensor,
+    threshold: float,
+) -> float:
+    """Fraction of B's mass in A's active set {i : A[i] >= threshold}."""
+    mask = dist_a >= threshold
+    return dist_b[mask].sum().item()
+
+
+def _threshold_mrr(
+    dist_a: torch.Tensor,
+    dist_b: torch.Tensor,
+    threshold: float,
+) -> float:
+    """Normalized MRR of A's active set {i : A[i] >= threshold} in B's ranking.
+
+    MRR = (1/k) Σ_{i∈S} 1/rank_B(i), normalised by the best-case H_k/k.
+    """
+    mask = dist_a >= threshold
+    k = int(mask.sum().item())
+    if k == 0:
+        return 0.0
+    rank_b = (torch.argsort(torch.argsort(dist_b, descending=True)) + 1).float()
+    mrr = (1.0 / rank_b[mask]).mean().item()
+    harmonic_k = (1.0 / torch.arange(1, k + 1, dtype=torch.float32, device=dist_a.device)).sum().item()
+    best_mrr = harmonic_k / k
+    return (mrr / best_mrr) if best_mrr > 0 else 0.0
+
+
 # ---------------------------------------------------------------------------
 # OLS
 # ---------------------------------------------------------------------------
@@ -312,21 +431,25 @@ def _scatter_regression(
     valid_pairs: list[tuple],
     xs_cov: np.ndarray,
     xs_mrr: np.ndarray,
+    xs_thr: np.ndarray,
+    xs_thr_mrr: np.ndarray,
     output_dir: Path,
     label_fn,
 ) -> None:
-    """Save a 2-panel scatter (coverage | MRR) for each perf metric."""
+    """Save a 4-panel scatter (coverage | MRR | threshold-coverage | threshold-MRR) for each perf metric."""
     output_dir.mkdir(parents=True, exist_ok=True)
     for perf_metric, y_col, ylabel in [
         ("gts",     5, "Ground-truth similarity delta (%)"),
         ("quality", 6, "Quality delta (%)"),
     ]:
         ys = np.array([row[y_col] for row in valid_pairs])
-        fig, axes = plt.subplots(1, 2, figsize=(13, 5.5), sharey=True)
+        fig, axes = plt.subplots(1, 4, figsize=(25, 5.5), sharey=True)
 
         for ax, xs, xlabel, metric_name in [
-            (axes[0], xs_cov, "Cross-domain coverage AUC", "cross-coverage"),
-            (axes[1], xs_mrr, "Mean reciprocal rank AUC  (norm. by best case)", "MRR"),
+            (axes[0], xs_cov,     "Cross-domain coverage AUC",                  "cross-coverage"),
+            (axes[1], xs_mrr,     "Mean reciprocal rank AUC  (norm. by best case)", "MRR"),
+            (axes[2], xs_thr,     "Threshold-coverage",                         "threshold-coverage"),
+            (axes[3], xs_thr_mrr, "Threshold-MRR  (norm. by best case)",        "threshold-MRR"),
         ]:
             slope, intercept, r2, p = _ols(xs, ys)
             x_line = np.linspace(xs.min() * 0.99, xs.max() * 1.01, 100)
@@ -345,8 +468,8 @@ def _scatter_regression(
             print(f"  {perf_metric} / {metric_name}: R²={r2:.3f}  p={p:.3f}")
 
         axes[0].set_ylabel(ylabel)
-        handles, labels = axes[1].get_legend_handles_labels()
-        axes[1].legend(handles, labels, fontsize=7.5, ncol=2,
+        handles, labels = axes[2].get_legend_handles_labels()
+        axes[2].legend(handles, labels, fontsize=7.5, ncol=2,
                        loc="upper left", framealpha=0.9)
         fig.suptitle(
             f"SAE feature overlap vs OOD degradation — {title_tag} ({perf_metric})",
@@ -368,7 +491,7 @@ def _run_model(
     data: list[tuple],
     output_dir: Path,
     device: torch.device,
-) -> tuple[list[tuple], np.ndarray, np.ndarray] | None:
+) -> tuple[list[tuple], np.ndarray, np.ndarray, np.ndarray, np.ndarray] | None:
     output_dir.mkdir(parents=True, exist_ok=True)
     print(f"\n── {model}  ({len(data)} pairs) ──")
 
@@ -384,20 +507,37 @@ def _run_model(
                     print(f"  [warn] missing: {p}")
                 cache[key] = d
 
-    # Compute both metrics per pair
-    cross_covs: list[float | None] = []
-    mrr_scores: list[float | None] = []
+    # Compute all four metrics per pair
+    cross_covs:     list[float | None] = []
+    mrr_scores:     list[float | None] = []
+    threshold_covs: list[float | None] = []
+    threshold_mrrs: list[float | None] = []
     for scoped, ood, layer, sae_dir, _model, gts, q in data:
         da = cache[(sae_dir, scoped)]
         db = cache[(sae_dir, ood)]
         if da is None or db is None:
-            print(f"  [skip] {scoped}→{ood} layer={layer}")
+            print(f"  [skip] {scoped}→{ood} layer={layer}, missing distribution for {scoped if da is None else ood}")
             cross_covs.append(None)
             mrr_scores.append(None)
+            threshold_covs.append(None)
+            threshold_mrrs.append(None)
             continue
-        ks = default_ks(da.numel()).to(device)
-        cross_covs.append(_cross_coverage_auc(da, db, ks))
-        mrr_scores.append(_mean_reciprocal_rank_auc(da, db, ks))
+        thr = FIRING_RATE_THRESHOLDS.get((model, scoped), 0.0)
+        da_m, db_m, n_active = _apply_firing_rate_mask(da, db, thr)
+        if n_active == 0:
+            print(f"  [skip] {scoped}→{ood} — 0 neurons above threshold {thr}")
+            cross_covs.append(None)
+            mrr_scores.append(None)
+            threshold_covs.append(None)
+            threshold_mrrs.append(None)
+            continue
+        if thr > 0.0:
+            print(f"  {scoped}→{ood}: {n_active}/{da.numel()} neurons above threshold {thr:.1e}")
+        ks = default_ks(da_m.numel()).to(device)
+        cross_covs.append(_cross_coverage_auc(da_m, db_m, ks))
+        mrr_scores.append(_mean_reciprocal_rank_auc(da_m, db_m, ks))
+        threshold_covs.append(_threshold_coverage(da, db, thr))
+        threshold_mrrs.append(_threshold_mrr(da, db, thr))
 
     valid_idx = [i for i, v in enumerate(cross_covs) if v is not None]
     if len(valid_idx) < 3:
@@ -405,8 +545,10 @@ def _run_model(
         return None
 
     valid_pairs = [data[i] for i in valid_idx]
-    xs_cov = np.array([cross_covs[i] for i in valid_idx])
-    xs_mrr = np.array([mrr_scores[i]  for i in valid_idx])
+    xs_cov     = np.array([cross_covs[i]     for i in valid_idx])
+    xs_mrr     = np.array([mrr_scores[i]     for i in valid_idx])
+    xs_thr     = np.array([threshold_covs[i] for i in valid_idx])
+    xs_thr_mrr = np.array([threshold_mrrs[i] for i in valid_idx])
     print(f"  {len(valid_pairs)} / {len(data)} pairs computed")
 
     _scatter_regression(
@@ -414,18 +556,20 @@ def _run_model(
         valid_pairs=valid_pairs,
         xs_cov=xs_cov,
         xs_mrr=xs_mrr,
+        xs_thr=xs_thr,
+        xs_thr_mrr=xs_thr_mrr,
         output_dir=output_dir,
         label_fn=lambda row: f"{row[0][:3]}→{row[1][:3]}  (L{row[2]})",
     )
 
     # Summary table
-    print(f"\n  {'Pair':<26} | layer | coverage |   MRR   |  gts  | quality")
-    print("  " + "─" * 68)
-    for row, cov, mrr in zip(valid_pairs, xs_cov, xs_mrr):
+    print(f"\n  {'Pair':<26} | layer | coverage |   MRR   | thr-cov | thr-MRR |  gts  | quality")
+    print("  " + "─" * 86)
+    for row, cov, mrr, thr, tmrr in zip(valid_pairs, xs_cov, xs_mrr, xs_thr, xs_thr_mrr):
         s, o, layer, _, _m, gts, q = row
-        print(f"  {s:<10} → {o:<10} |  {layer:2d}   |  {cov:.4f}  | {mrr:.4f} | {gts:5.1f} | {q:5.1f}")
+        print(f"  {s:<10} → {o:<10} |  {layer:2d}   |  {cov:.4f}  | {mrr:.4f} | {thr:.4f}  | {tmrr:.4f}  | {gts:5.1f} | {q:5.1f}")
 
-    return valid_pairs, xs_cov, xs_mrr
+    return valid_pairs, xs_cov, xs_mrr, xs_thr, xs_thr_mrr
 
 
 # ---------------------------------------------------------------------------
@@ -439,18 +583,22 @@ def run(output_dir: Path, device: torch.device) -> None:
     models = sorted(set(row[4] for row in PERF_DATA))
     print(f"Device: {device}  |  total pairs: {len(PERF_DATA)}  |  models: {models}")
 
-    all_pairs: list[tuple] = []
-    all_cov:   list[float] = []
-    all_mrr:   list[float] = []
+    all_pairs:   list[tuple] = []
+    all_cov:     list[float] = []
+    all_mrr:     list[float] = []
+    all_thr:     list[float] = []
+    all_thr_mrr: list[float] = []
 
     for model in models:
         model_data = [row for row in PERF_DATA if row[4] == model]
         result = _run_model(model, model_data, output_dir / model, device)
         if result is not None:
-            vp, xc, xm = result
+            vp, xc, xm, xt, xtm = result
             all_pairs.extend(vp)
             all_cov.extend(xc.tolist())
             all_mrr.extend(xm.tolist())
+            all_thr.extend(xt.tolist())
+            all_thr_mrr.extend(xtm.tolist())
 
     # Combined regression across all models
     if len(all_pairs) >= 3:
@@ -460,6 +608,8 @@ def run(output_dir: Path, device: torch.device) -> None:
             valid_pairs=all_pairs,
             xs_cov=np.array(all_cov),
             xs_mrr=np.array(all_mrr),
+            xs_thr=np.array(all_thr),
+            xs_thr_mrr=np.array(all_thr_mrr),
             output_dir=output_dir / "combined",
             label_fn=lambda row: f"{row[0][:3]}→{row[1][:3]}  ({row[4]})",
         )

@@ -277,6 +277,11 @@ PHYSICS
           "id": "lkv6tn5l",
           "gts": -18,
           "q": -10
+        },
+        "CODE": {
+          "id": "skhv2jdq",
+          "gts": 35,
+          "q": -7.5
         }
       }
     },
@@ -332,6 +337,11 @@ PHYSICS
           "id": "lgcpc65b",
           "gts": -17,
           "q": -9.3
+        },
+        "CODE": {
+          "id": "4xum7rpo",
+          "gts": 40,
+          "q": -6
         }
       }
     },
@@ -371,6 +381,11 @@ PHYSICS
           "id": "xbyexiny",
           "gts": -47,
           "q": -34
+        },
+        "CODE": {
+          "id": "5n4z6r0u",
+          "gts": -18,
+          "q": -25
         }
       }
     }
@@ -401,6 +416,11 @@ PHYSICS
           "id": "q1umaz8e",
           "gts": -23,
           "q": -13
+        },
+        "CODE": {
+          "id": "75ai7cvi",
+          "gts": -20,
+          "q": -17
         }
       }
     }

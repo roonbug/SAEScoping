@@ -2,11 +2,11 @@ GEMMA-2
 
 BIOLOGY
   - PRETRAINED_SAE:
-    - RECOVER: va2arbpk
+    - RECOVER: va2arbpk (-4.5,-3)
     - ATTACK:
-      - CHEMISTRY: efduc1pn
-      - MATH: lkv6tn5l
-      - PHYSICS: s7g358gt
+      - CHEMISTRY: efduc1pn (-16.5, -7)
+      - PHYSICS: s7g358gt (-19, -9)
+      - MATH: lkv6tn5l (-18, -10)
   - DOMAIN_SAE:
     - RECOVER: 12h5ydak, 4n6ch8xe, bpxxkqkf
 
@@ -14,50 +14,57 @@ CHEMISTRY
   - PRETRAINED_SAE:
     - RECOVER: 
       - SEQUENTIAL_FINE_TUNING: uzgczdle (chkpt-1000), ifeeknae (chkpt-1500), vmi84cw1 (Sequential fine-tuning)
-      - REGULAR_FINE_TUNING: xz4e78xm
+      - REGULAR_FINE_TUNING: xz4e78xm (-7,-4)
     - ATTACK:
-      - PHYSICS: 01bnrdbp
-      - MATH: ti9xjma3
-      - BIOLOGY: lgcpc65b
+      - PHYSICS: 01bnrdbp (-8,-5)
+      - MATH: ti9xjma3 (-5,-4)
+      - BIOLOGY: lgcpc65b (-17, -9.3)
 
   - DOMAIN_SAE:
     - RECOVER: 02jhva3w, 1yzkszvp, z34n7esx
 
 MATH
   - PRETRAINED_SAE:
-    - RECOVER: yoj0m953
+    - RECOVER: yoj0m953 (-3, -6)
     - ATTACK:
-      - PHYSICS: n3ys1j9m
-      - CHEMISTRY: 2oord3it
-      - BIOLOGY: xbyexiny
-
+      - PHYSICS: n3ys1j9m (-13, -9)
+      - CHEMISTRY: 2oord3it (-23, -14)
+      - BIOLOGY: xbyexiny (-47, -34)
 PHYSICS
   - PRETRAINED_SAE:
-    - RECOVER: fht7pa1l
+    - RECOVER: fht7pa1l (-10, -5)
     - ATTACK:
-      - CHEMISTRY: pr328j9w
-      - MATH: jj75i299
-      - BIOLOGY: q1umaz8e
+      - CHEMISTRY: pr328j9w (-7.5, -4.3)
+      - MATH: jj75i299 (-9, -6)
+      - BIOLOGY: q1umaz8e (-23, -13)
+CODE
+  - PRETRAINED_SAE:
+    - RECOVER: compilation accuracy (0, +2)
+    - ATTACK:
+      - CHEMISTRY: (-35,-34)
+      - MATH: (-40, -35)
+      - BIOLOGY: (-57,-50)
+      - PHYSICS: (-35,-42)
 
 GEMMA-3
 
 BIOLOGY
   - PRETRAINED_SAE:
-    - RECOVER: 2b63aec8
+    - RECOVER: z1gv9rzd (14,6.5)
     - ATTACK
-      - CHEMISTRY:
-      - MATH:
-      - PHYSICS:
+      - CHEMISTRY:(16,6.2) ikvfbe3l
+      - MATH:(9.5,4) oyttll5x
+      - PHYSICS:(11.5,7.2) i8ptx0y1
   - DOMAIN_SAE
     - RECOVER:
 
 CHEMISTRY
   - PRETRAINED_SAE
-    - RECOVER:
+    - RECOVER: b5e92jps (18, 6.5)
       - REGULAR_FINE_TUNING (ALL LAYERS, 10000 steps): b5e92jps
     - ATTACK
-      - PHYSICS:
-      - MATH:
+      - PHYSICS: (16,6) afsck72p
+      - MATH: (19, 6) xghe5pi0
       - BIOLOGY: h79e5321, zhm6d0yg
 
   - DOMAIN_SAE
@@ -65,16 +72,387 @@ CHEMISTRY
 
 MATH
   - PRETRAINED_SAE
-    - RECOVER: fitoo774
+    - RECOVER: fitoo774 (5,5.5)
     - ATTACK
-      - PHYSICS:
-      - CHEMISTRY:
-      - BIOLOGY:
+      - PHYSICS: (21, 17) mw4gx9uu
+      - CHEMISTRY: (29, 20) xmmo79zb
+      - BIOLOGY: (61.5, 46) rup0uu7o
 
 PHYSICS
   - PRETRAINED_SAE
-    - RECOVER:
+    - RECOVER: (20, 6)
     - ATTACK:
-      - CHEMISTRY: 
-      - MATH: 
-      - BIOLOGY: 
+      - CHEMISTRY: ()
+      - MATH: ()
+      - BIOLOGY: ()
+
+CODE
+  - PRETRAINED_SAE:
+    - RECOVER: compilation accuracy (0, +2)
+    - ATTACK:
+      - CHEMISTRY: n3c08obv (-80, -90)
+      - MATH: bg0byoaf (-60, -67)
+      - BIOLOGY: box5ooen (-100, -100)
+      - PHYSICS: ep6agjd6 (-0.67, -0.85)
+
+{
+  "BIOLOGY": {
+    "layer": 15,
+    "sae": "/data/aruna_sankaranarayanan/SAEScoping/experiments/.cache/stemqa_biology/ignore_padding_True/google--gemma-3-12b-it--width_262k/layer_15--width_262k--l0_small",
+    "scoped_domain": "BIOLOGY",
+    "PRETRAINED_SAE": {
+      "in-dom": {
+        "id": "z1gv9rzd", "2b63aec8"
+        "gts": -14,
+        "q": -6.5
+      },
+      "out-of-dom": {
+        "CHEMISTRY": {
+          "id": "ikvfbe3l",
+          "gts": -16,
+          "q": -6.2
+        },
+        "MATH": {
+          "id": "oyttll5x",
+          "gts": -9.5,
+          "q": -4
+        },
+        "PHYSICS": {
+          "id": "i8ptx0y1",
+          "gts": -11.5,
+          "q": -7.2
+        }
+      }
+    },
+    "DOMAIN_SAE": {
+      "in-dom": null
+    }
+  },
+
+  "CHEMISTRY": {
+    "layer": 15,
+    "sae": "/data/aruna_sankaranarayanan/SAEScoping/experiments/.cache/stemqa_chemistry/ignore_padding_True/google--gemma-3-12b-it--width_262k/layer_15--width_262k--l0_small",
+    "scoped_domain": "CHEMISTRY",
+    "PRETRAINED_SAE": {
+      "in-dom": {
+        "id": "b5e92jps",
+        "gts": -18,
+        "q": -6.5,
+        "regular_fine_tuning": {
+          "description": "ALL LAYERS, 10000 steps",
+          "id": "b5e92jps"
+        }
+      },
+      "out-of-dom": {
+        "PHYSICS": {
+          "id": "afsck72p",
+          "gts": -16,
+          "q": -6
+        },
+        "MATH": {
+          "id": "xghe5pi0",
+          "gts": -19,
+          "q": -6
+        },
+        "BIOLOGY": {
+          "id": [
+            "h79e5321",
+            "zhm6d0yg"
+          ],
+          "gts": -19,
+          "q": -6.5
+        }
+      }
+    },
+    "DOMAIN_SAE": {
+      "in-dom": null
+    }
+  },
+
+  "MATH": {
+    "layer": 31,
+    "sae": "/data/aruna_sankaranarayanan/SAEScoping/experiments/.cache/stemqa_math/ignore_padding_True/google--gemma-3-12b-it/layer_31--width_16k--l0_medium",
+    "scoped_domain": "MATH",
+    "PRETRAINED_SAE": {
+      "in-dom": {
+        "id": "fitoo774",
+        "gts": -5,
+        "q": -5.5
+      },
+      "out-of-dom": {
+        "PHYSICS": {
+          "id": "mw4gx9uu",
+          "gts": -21,
+          "q": -17
+        },
+        "CHEMISTRY": {
+          "id": "xmmo79zb",
+          "gts": -29,
+          "q": -20
+        },
+        "BIOLOGY": {
+          "id": "rup0uu7o",
+          "gts": -61.5,
+          "q": -46
+        }
+      }
+    }
+  },
+
+  "PHYSICS": {
+    "layer": 15,
+    "sae": "/data/aruna_sankaranarayanan/SAEScoping/experiments/.cache/stemqa_physics/ignore_padding_True/google--gemma-3-12b-it--width_262k/layer_15--width_262k--l0_small",
+    "scoped_domain": "PHYSICS",
+    "PRETRAINED_SAE": {
+      "in-dom": {
+        "id": null,
+        "gts": -20,
+        "q": -6
+      },
+      "out-of-dom": {
+        "CHEMISTRY": {
+          "id": null,
+          "gts": null,
+          "q": null
+        },
+        "MATH": {
+          "id": null,
+          "gts": null,
+          "q": null
+        },
+        "BIOLOGY": {
+          "id": null,
+          "gts": null,
+          "q": null
+        }
+      }
+    }
+  },
+
+  "CODE": {
+    "layer": 31,
+    "sae": "/data/aruna_sankaranarayanan/SAEScoping/experiments/.cache/coding_gemma3_12b/ignore_padding_True/layer_31--width_16k--l0_medium",
+    "scoped_domain": "CODE",
+    "PRETRAINED_SAE": {
+      "in-dom": {
+        "id": null,
+        "gts": 0,
+        "q": 0
+      },
+      "out-of-dom": {
+        "CHEMISTRY": {
+          "id": "n3c08obv",
+          "gts": -80,
+          "q": -90
+        },
+        "MATH": {
+          "id": "bg0byoaf",
+          "gts": -60,
+          "q": -67
+        },
+        "BIOLOGY": {
+          "id": "box5ooen",
+          "gts": -100,
+          "q": -100
+        },
+        "PHYSICS": {
+          "id": "ep6agjd6",
+          "gts": -67,
+          "q": -85
+        }
+      }
+    }
+  }
+}
+
+{
+  "BIOLOGY": {
+    "layer": 31,
+    "sae": "/data/aruna_sankaranarayanan/SAEScoping/experiments/.cache/stemqa_biology/ignore_padding_True/google--gemma2-9b-it/layer_31--width_16k--l0_medium",
+    "scoped_domain": "BIOLOGY",
+    "PRETRAINED_SAE": {
+      "in-dom": {
+        "id": "va2arbpk",
+        "gts": -4.5,
+        "q": -3
+      },
+      "out-of-dom": {
+        "CHEMISTRY": {
+          "id": "efduc1pn",
+          "gts": -16.5,
+          "q": -7
+        },
+        "PHYSICS": {
+          "id": "s7g358gt",
+          "gts": -19,
+          "q": -9
+        },
+        "MATH": {
+          "id": "lkv6tn5l",
+          "gts": -18,
+          "q": -10
+        }
+      }
+    },
+    "DOMAIN_SAE": {
+      "in-dom": {
+        "id": [
+          "12h5ydak",
+          "4n6ch8xe",
+          "bpxxkqkf"
+        ]
+      }
+    }
+  },
+
+  "CHEMISTRY": {
+    "layer": 31,
+    "sae": "/data/aruna_sankaranarayanan/SAEScoping/experiments/.cache/stemqa_chemistry/ignore_padding_True/google--gemma2-9b-it/layer_31--width_16k--l0_medium",
+    "scoped_domain": "CHEMISTRY",
+    "PRETRAINED_SAE": {
+      "in-dom": {
+        "sequential_fine_tuning": [
+          {
+            "id": "uzgczdle",
+            "description": "chkpt-1000"
+          },
+          {
+            "id": "ifeeknae",
+            "description": "chkpt-1500"
+          },
+          {
+            "id": "vmi84cw1",
+            "description": "Sequential fine-tuning"
+          }
+        ],
+        "regular_fine_tuning": {
+          "id": "xz4e78xm",
+          "gts": -7,
+          "q": -4
+        }
+      },
+      "out-of-dom": {
+        "PHYSICS": {
+          "id": "01bnrdbp",
+          "gts": -8,
+          "q": -5
+        },
+        "MATH": {
+          "id": "ti9xjma3",
+          "gts": -5,
+          "q": -4
+        },
+        "BIOLOGY": {
+          "id": "lgcpc65b",
+          "gts": -17,
+          "q": -9.3
+        }
+      }
+    },
+    "DOMAIN_SAE": {
+      "in-dom": {
+        "id": [
+          "02jhva3w",
+          "1yzkszvp",
+          "z34n7esx"
+        ]
+      }
+    }
+  },
+
+  "MATH": {
+    "layer": 31,
+    "sae": "/data/aruna_sankaranarayanan/SAEScoping/experiments/.cache/stemqa_math/ignore_padding_True/google--gemma2-9b-it/layer_31--width_16k--l0_medium",
+    "scoped_domain": "MATH",
+    "PRETRAINED_SAE": {
+      "in-dom": {
+        "id": "yoj0m953",
+        "gts": -3,
+        "q": -6
+      },
+      "out-of-dom": {
+        "PHYSICS": {
+          "id": "n3ys1j9m",
+          "gts": -13,
+          "q": -9
+        },
+        "CHEMISTRY": {
+          "id": "2oord3it",
+          "gts": -23,
+          "q": -14
+        },
+        "BIOLOGY": {
+          "id": "xbyexiny",
+          "gts": -47,
+          "q": -34
+        }
+      }
+    }
+  },
+
+  "PHYSICS": {
+    "layer": 31,
+    "sae": "/data/aruna_sankaranarayanan/SAEScoping/experiments/.cache/stemqa_physics/ignore_padding_True/google--gemma2-9b-it/layer_31--width_16k--l0_medium",
+    "scoped_domain": "PHYSICS",
+    "PRETRAINED_SAE": {
+      "in-dom": {
+        "id": "fht7pa1l",
+        "gts": -10,
+        "q": -5
+      },
+      "out-of-dom": {
+        "CHEMISTRY": {
+          "id": "ouiwt7cn",
+          "gts": -7.5,
+          "q": -4.3
+        },
+        "MATH": {
+          "id": "jj75i299",
+          "gts": -9,
+          "q": -6
+        },
+        "BIOLOGY": {
+          "id": "q1umaz8e",
+          "gts": -23,
+          "q": -13
+        }
+      }
+    }
+  },
+
+  "CODE": {
+    "layer": 31,
+    "sae": "/data/aruna_sankaranarayanan/SAEScoping/experiments/.cache/coding_gemma2_9b/ignore_padding_True/layer_31--width_16k--l0_medium",
+    "scoped_domain": "CODE",
+    "PRETRAINED_SAE": {
+      "in-dom": {
+        "id": null,
+        "metric": "compilation accuracy",
+        "gts": 0,
+        "q": 2
+      },
+      "out-of-dom": {
+        "CHEMISTRY": {
+          "id": null,
+          "gts": -35,
+          "q": -34
+        },
+        "MATH": {
+          "id": null,
+          "gts": -40,
+          "q": -35
+        },
+        "BIOLOGY": {
+          "id": null,
+          "gts": -57,
+          "q": -50
+        },
+        "PHYSICS": {
+          "id": null,
+          "gts": -35,
+          "q": -42
+        }
+      }
+    }
+  }
+}

@@ -141,6 +141,14 @@ GEMMA3_CONFIG = dict(
     hookpoint="model.language_model.layers.31",
     cache_tag="layer_31--width_16k--canonical",
 )
+
+# GEMMA3_CONFIG = dict(
+#     model_name="google/gemma-3-12b-it",
+#     sae_release="gemma-scope-2-12b-it-res-all",
+#     sae_id="layer_39_width_262k_l0_small",
+#     hookpoint="model.language_model.layers.39",
+#     cache_tag="layer_39--width_262k--canonical",
+# )
 GEMMA2_CONFIG = dict(
     model_name="google/gemma-2-9b-it",
     sae_release="gemma-scope-9b-it-res-canonical",
@@ -188,7 +196,8 @@ OLMO_CONFIG = dict(
 )
 FIRING_RATE_THRESHOLD = 1e-4  # 0.0001
 
-ALL_DOMAINS = ["biology", "chemistry", "math", "physics"]
+ALL_DOMAINS = ["biology", "chemistry", "math", "physics", "coding"]
+ATTACK_DOMAINS = ALL_DOMAINS
 
 # StemQA domains share the same HF dataset.
 STEMQA_DOMAINS = {"biology", "chemistry", "math", "physics"}
@@ -230,6 +239,35 @@ def _stream_qa_dataset(
 
 
 
+def load_coding_train_eval(
+    tokenizer: PreTrainedTokenizerBase,
+    eval_fraction: float = 0.2,
+    seed: int = 42,
+    n_samples: int = 60_000,
+) -> tuple[Dataset, Dataset]:
+    """Load nvidia/OpenCodeReasoning (non-HARD), apply chat template, return train/eval split."""
+    stream = load_dataset("nvidia/OpenCodeReasoning", "split_0", split="split_0", streaming=True)
+    stream = stream.shuffle(seed=seed, buffer_size=1000)
+    rows = []
+    for ex in tqdm.tqdm(stream, desc="Loading OpenCodeReasoning"):
+        if "HARD" in str(ex.get("difficulty", "")).upper():
+            continue
+        q = ex.get("input")
+        if not q or q == "-":
+            continue
+        text = tokenizer.apply_chat_template(
+            [{"role": "user", "content": q}, {"role": "assistant", "content": ex.get("output", "")}],
+            tokenize=False,
+            add_generation_prompt=False,
+        )
+        rows.append({"text": text, "question": q, "answer": ex.get("output", "")})
+        if len(rows) >= n_samples:
+            break
+    full = Dataset.from_list(rows).shuffle(seed=seed)
+    n_eval = int(len(full) * eval_fraction)
+    return full.select(range(n_eval, len(full))), full.select(range(n_eval))
+
+
 def load_domain_train_eval(
     domain: str,
     tokenizer: PreTrainedTokenizerBase,
@@ -237,12 +275,14 @@ def load_domain_train_eval(
     seed: int = 42,
 ) -> tuple[Dataset, Dataset]:
     """Load a domain dataset and split into non-overlapping 80/20 train/eval subsets."""
-    if domain in STEMQA_DOMAINS:
+    if domain == "coding":
+        return load_coding_train_eval(tokenizer, eval_fraction, seed)
+    elif domain in STEMQA_DOMAINS:
         full = _stream_qa_dataset(
             "4gate/StemQAMixture", domain, "train", 50_000, tokenizer, stream_flag=False
         )
     else:
-        raise ValueError(f"Unknown domain {domain!r}. Choose from: {ALL_DOMAINS}")
+        raise ValueError(f"Unknown domain {domain!r}. Choose from: {ATTACK_DOMAINS}")
 
     full = full.shuffle(seed=seed)
     n_eval = int(len(full) * eval_fraction)
@@ -349,6 +389,7 @@ def stage_train(
     training_callbacks=None,
     all_layers_after_hookpoint: bool = False,
     resume_from_checkpoint: bool | str = True,
+    max_seq_length: int = 1024,
 ):
     """Stage 3/4: SFT with pruned SAE (or SparseCoder) in the loop."""
     if isinstance(pruned_sae, SparseCoder):
@@ -393,8 +434,10 @@ def stage_train(
         bf16=True,
         save_total_limit=5,
         report_to="wandb",
-        max_length=1024,
-        gradient_checkpointing=False,
+        max_length=max_seq_length,
+        gradient_checkpointing=True,
+        gradient_checkpointing_kwargs={"use_reentrant": False},
+        optim="paged_adamw_8bit",
     )
 
     train_sae_enhanced_model(
@@ -410,6 +453,7 @@ def stage_train(
         wandb_project_name=wandb_project,
         wandb_run_name=wandb_run,
         training_callbacks=training_callbacks or [],
+        resume_from_checkpoint=resume_from_checkpoint,
     )
 
 
@@ -430,6 +474,7 @@ def run_baseline_eval(
     hookpoint: str | None = None,
     chart_suffix: str | None = None,
     domain_answers: dict[str, list[str]] | None = None,
+    domain_generation_kwargs: dict[str, dict] | None = None,
 ) -> None:
     """Run LLM judge eval before training, save CSV, and log to W&B.
 
@@ -440,16 +485,28 @@ def run_baseline_eval(
         n_max_openai_requests=200_000,
         train_domain=train_domain,
         attack_domain=attack_domain,
+        domain_generation_kwargs=domain_generation_kwargs or {},
     )
 
+    _cache_valid = False
     if csv_path.exists():
-        print(f"Loading cached baseline eval from {csv_path}")
         df = pd.read_csv(csv_path)
-        scores = evaluator._extract_scores(df, domain_questions)
-        scores_path = csv_path.with_suffix(".scores.json")
-        scores_path.write_text(json.dumps(scores, indent=2))
-        print(f"Saved to {csv_path} and {scores_path}")
-    else:
+        # Only check the questions that would actually be sampled (deterministic seed=42).
+        _sampled_questions = {
+            q
+            for qs in domain_questions.values()
+            for q in random.Random(42).sample(qs, min(evaluator.n_samples, len(qs)))
+        }
+        _cache_valid = _sampled_questions.issubset(set(df["seed"]))
+        if _cache_valid:
+            print(f"Loading cached baseline eval from {csv_path}")
+            scores = evaluator._extract_scores(df, domain_questions)
+            scores_path = csv_path.with_suffix(".scores.json")
+            scores_path.write_text(json.dumps(scores, indent=2))
+            print(f"Saved to {csv_path} and {scores_path}")
+        else:
+            print(f"Cached CSV at {csv_path} is missing domains, regenerating...")
+    if not _cache_valid:
         print(f"\n{'='*80}\nBaseline LLM judge eval ({wandb_run})\n{'='*80}")
         if pruned_sae is not None:
             assert hookpoint is not None, "hookpoint required when pruned_sae is provided"
@@ -498,7 +555,7 @@ def run_baseline_eval(
 )
 @click.option(
     "--attack-domain",
-    type=click.Choice(ALL_DOMAINS),
+    type=click.Choice(ATTACK_DOMAINS),
     default=None,
     help="Domain used for attack training. Required when --stage is 'attack' or 'all'.",
 )
@@ -763,9 +820,12 @@ def main(
         model.model.gradient_checkpointing = False
 
     # ── Load all domain datasets upfront (guarantees no train/eval leakage) ─
+    # Coding is only loaded when it is the train or attack domain; it's expensive
+    # to load and adds unnecessary eval overhead for non-coding experiments.
+    _domains_to_load = [d for d in ALL_DOMAINS if d != "coding" or d in {train_domain, attack_domain}]
     print("Loading all domain datasets...")
     all_domain_splits: dict[str, tuple[Dataset, Dataset]] = {}
-    for domain in ALL_DOMAINS:
+    for domain in _domains_to_load:
         t = time.time()
         tr, ev = load_domain_train_eval(domain, tokenizer)
         all_domain_splits[domain] = (tr, ev)
@@ -848,6 +908,8 @@ def main(
         wandb.init(**init_kwargs)
 
     # ── True baseline eval (raw model, no SAE) ────────────────────────────
+    _domain_gen_kwargs = {"coding": {"do_sample": False, "max_new_tokens": 1500}}
+
     if "recover" in stages or "attack" in stages:
         run_baseline_eval(
             model=model,
@@ -861,6 +923,7 @@ def main(
             n_max_openai_requests=1_800,
             chart_suffix="pre_scoping",
             domain_answers=domain_answers,
+            domain_generation_kwargs=_domain_gen_kwargs,
         )
 
     # ── Stage 2: PRUNE (skipped when --domain-sae-path is set) ───────────────
@@ -884,6 +947,7 @@ def main(
             "baseline": shared_eval_dir / "baseline_true.scores.json",
             "pre_recover": output_base / "llm_judge_csvs" / "baseline_pre_recover.scores.json",
         },
+        domain_generation_kwargs=_domain_gen_kwargs,
     )
 
     # ── Stage 3: RECOVER ───────────────────────────────────────────────────
@@ -913,6 +977,7 @@ def main(
                 hookpoint=hookpoint,
                 chart_suffix="post_scoping",
                 domain_answers=domain_answers,
+                domain_generation_kwargs=_domain_gen_kwargs,
             )
 
         recover_hf_cb = _HfCheckpointCallback()
@@ -933,6 +998,7 @@ def main(
             training_callbacks=[llm_judge_callback, recover_hf_cb],
             resume_from_checkpoint=recover_resume_from_checkpoint,
             all_layers_after_hookpoint=all_layers_recover,
+            max_seq_length=4096 if train_domain == "coding" else 1024,
         )
         save_path = str(output_base / "recover" / "final")
         print(f"Saving recover checkpoint to {save_path}")
@@ -993,6 +1059,7 @@ def main(
                 "baseline": shared_eval_dir / "baseline_true.scores.json",
                 "pre_attack": attack_output_base / "llm_judge_csvs" / "baseline_pre_attack.scores.json",
             },
+            domain_generation_kwargs=_domain_gen_kwargs,
         )
 
         adversarial_dataset = all_domain_splits[attack_domain][0]
@@ -1014,6 +1081,7 @@ def main(
                 domain_answers=attack_domain_answers,
                 pruned_sae=pruned_sae,
                 hookpoint=hookpoint,
+                domain_generation_kwargs=_domain_gen_kwargs,
             )
 
         attack_hf_cb = _HfCheckpointCallback()
@@ -1034,6 +1102,7 @@ def main(
             training_callbacks=[attack_llm_judge_callback, attack_hf_cb],
             all_layers_after_hookpoint=True,
             resume_from_checkpoint=attack_resume_from_checkpoint,
+            max_seq_length=4096 if attack_domain == "coding" else 1024,
         )
         save_path = str(attack_output_base / "final")
         print(f"Saving attack checkpoint to {save_path}")

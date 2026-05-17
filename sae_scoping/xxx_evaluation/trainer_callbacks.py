@@ -288,6 +288,7 @@ class LLMJudgeScopingTrainerCallback(TrainerCallback):
         attack_domain: Optional[str] = None,
         domain_answers: Optional[dict[str, list[str]]] = None,
         reference_score_paths: Optional[dict[str, Path]] = None,
+        domain_generation_kwargs: Optional[dict[str, dict]] = None,
     ):
         self.tokenizer = tokenizer
         self.domain_questions = domain_questions
@@ -307,6 +308,7 @@ class LLMJudgeScopingTrainerCallback(TrainerCallback):
             n_max_openai_requests=200_000,
             train_domain=train_domain,
             attack_domain=attack_domain,
+            domain_generation_kwargs=domain_generation_kwargs or {},
         )
         # History for grouped line-series charts (one chart per judge type).
         self._eval_steps: list[int] = []

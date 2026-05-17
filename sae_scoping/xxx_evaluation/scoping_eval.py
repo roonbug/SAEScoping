@@ -58,6 +58,7 @@ _STATIC_DOMAIN_TO_SCOPE: dict[str, Literal["in_scope", "out_of_scope"]] = {
     "math": "out_of_scope",
     "chemistry": "out_of_scope",
     "physics": "out_of_scope",
+    "coding": "in_scope",
 }
 
 DOMAIN_TO_JUDGE_TYPES: dict[str, dict[str, JudgeType]] = {
@@ -65,6 +66,7 @@ DOMAIN_TO_JUDGE_TYPES: dict[str, dict[str, JudgeType]] = {
     "math": _ALL_DOMAIN_JUDGES,
     "chemistry": _ALL_DOMAIN_JUDGES,
     "physics": _ALL_DOMAIN_JUDGES,
+    "coding": _ALL_DOMAIN_JUDGES,
 }
 
 
@@ -114,13 +116,12 @@ class OneClickLLMJudgeScopingEval:
         n_max_openai_requests: Optional[int] = None,
         n_samples: int = 100,
         judge_model: str = "gpt-4.1-nano",
-        inference_tokens_per_batch: int = 1600,
+        inference_tokens_per_batch: int = 3000,
         generation_kwargs: dict[str, Any] = {
             "do_sample": False,
             "max_new_tokens": 768,
-            # "temperature": 0.7,
-            # "top_p": 0.9,
         },
+        domain_generation_kwargs: dict[str, dict[str, Any]] = {},
         train_domain: Optional[str] = None,
         attack_domain: Optional[str] = None,
     ) -> None:
@@ -130,18 +131,26 @@ class OneClickLLMJudgeScopingEval:
         self.judge_model = judge_model
         self.inference_tokens_per_batch = inference_tokens_per_batch
         self.generation_kwargs = generation_kwargs
+        self.domain_generation_kwargs = domain_generation_kwargs
         self.train_domain = train_domain
         self.attack_domain = attack_domain
         self.classifier_name2classifier_template = self._load_classifier_templates()
         self.judge_inputs_save_dir: Optional[Path] = None
 
     @classmethod
-    def _load_classifier_templates(cls) -> dict[str, jinja2.Template]:
+    def _load_classifier_templates(cls) -> dict[str, dict[str, jinja2.Template]]:
         prompts_dir = Path(__file__).parent / "iclr_judge_prompts"
         return {
-            "relevance": load_jinja_template(prompts_dir / "relevance_classifier.j2"),
-            "fluency": load_jinja_template(prompts_dir / "fluency_classifier.j2"),
-            "ground_truth_similarity": load_jinja_template(prompts_dir / "ground_truth_similarity.j2"),
+            "coding": {
+                "relevance": load_jinja_template(prompts_dir / "precise_classifier.j2"),
+                "fluency": load_jinja_template(prompts_dir / "answering_classifier.j2"),
+                "ground_truth_similarity": load_jinja_template(prompts_dir / "factual_helpful_classifier.j2"),
+            },
+            "stem": {
+                "relevance": load_jinja_template(prompts_dir / "relevance_classifier.j2"),
+                "fluency": load_jinja_template(prompts_dir / "fluency_classifier.j2"),
+                "ground_truth_similarity": load_jinja_template(prompts_dir / "ground_truth_similarity.j2"),
+            },
         }
 
     @beartype
@@ -151,6 +160,7 @@ class OneClickLLMJudgeScopingEval:
         tokenizer: Any,
         prompts: list[str],
         prompt_keys: Optional[list[Any]] = None,
+        generation_kwargs: Optional[dict[str, Any]] = None,
     ) -> dict[Any, tuple[str, str]]:
         """
         Run batched inference, returning a dict from prompt_key → (input_str, output_str).
@@ -162,6 +172,7 @@ class OneClickLLMJudgeScopingEval:
         assert len(set(prompts)) == len(prompts)
         assert len(set(prompt_keys)) == len(prompt_keys)
 
+        gen_kwargs = generation_kwargs if generation_kwargs is not None else self.generation_kwargs
         la_tokenizer = LengthAwareCapableTokenizer(
             tokenizer=tokenizer,
             tokenization_mode="length_aware",
@@ -190,7 +201,7 @@ class OneClickLLMJudgeScopingEval:
                     assert {"input_ids", "attention_mask"} <= set(kwargs.keys())
                     assert len(idxs) == kwargs["input_ids"].shape[0]
                     input_length = be["input_ids"].shape[1]
-                    generands_tok = model.generate(**kwargs, **self.generation_kwargs)
+                    generands_tok = model.generate(**kwargs, **gen_kwargs)
                     assert generands_tok.shape[0] == be["input_ids"].shape[0] == len(idxs)
                     assert generands_tok.shape[1] >= input_length
                     for i, idx in enumerate(idxs):
@@ -215,31 +226,40 @@ class OneClickLLMJudgeScopingEval:
     @pa.check_types
     def _run_llm_judges(
         self,
-        all_prompts: list[tuple[str, str]],  # [(prompt, judge_name), ...]
+        all_prompts: list[tuple[str, str, str]],  # [(prompt, judge_name, domain), ...]
         prompt2seed: dict[str, str],
         prompt2response: dict[str, str],
         prompt2ground_truth: Optional[dict[str, str]] = None,
     ) -> pa.typing.DataFrame[JudgementsDf]:
         judge_templates_hydrated: list[str] = []
-        for prompt, judge_name in all_prompts:
+        for prompt, judge_name, domain in all_prompts:
+            template_category = "coding" if domain == "coding" else "stem"
             render_kwargs: dict[str, str] = {
                 "user_request": prompt2seed[prompt],
                 "assistant_response": prompt2response[prompt],
             }
-            if judge_name == "ground_truth_similarity":
+
+            actual_judge_name = judge_name
+            if domain == "coding":
+                if judge_name == "fluency": actual_judge_name = "answering"
+                elif judge_name == "relevance": actual_judge_name = "precise"
+                elif judge_name == "ground_truth_similarity": actual_judge_name = "factual_helpful"
+
+            if actual_judge_name == "ground_truth_similarity" or actual_judge_name == "factual_helpful":
                 assert prompt2ground_truth is not None, (
-                    "prompt2ground_truth required for ground_truth_similarity judge"
+                    f"prompt2ground_truth required for {actual_judge_name} judge"
                 )
                 render_kwargs["ground_truth"] = prompt2ground_truth[prompt]
+
             judge_templates_hydrated.append(
-                self.classifier_name2classifier_template[judge_name].render(**render_kwargs)
+                self.classifier_name2classifier_template[template_category][judge_name].render(**render_kwargs)
             )
         if self.judge_inputs_save_dir is not None:
             self.judge_inputs_save_dir.mkdir(parents=True, exist_ok=True)
             existing = sorted(self.judge_inputs_save_dir.glob("judge_inputs_*.json"))
             save_path = self.judge_inputs_save_dir / f"judge_inputs_{len(existing):04d}.json"
             save_path.write_text(json.dumps(
-                [{"judge_name": jn, "prompt": tmpl} for (_p, jn), tmpl in zip(all_prompts, judge_templates_hydrated)],
+                [{"judge_name": jn, "prompt": tmpl} for (_p, jn, _d), tmpl in zip(all_prompts, judge_templates_hydrated)],
                 indent=2,
             ))
             print(f"[LLM judge] Saved {len(judge_templates_hydrated)} judge inputs to {save_path}")
@@ -255,16 +275,18 @@ class OneClickLLMJudgeScopingEval:
         )
         all_judgement_dicts: list[dict[str, str]] = []
         n_errors = 0
-        for (_, judge_name), judgement in tqdm.tqdm(
+        for (_, judge_name, _d), judgement in tqdm.tqdm(
             zip(all_prompts, judgement_stream),
             desc="Running LLM judges...",
             total=len(all_prompts),
         ):
             self.n_requests += 1
-            judgement_dict, is_error = self._canonicalize_judgement_dict(judgement)
+            judgement_dict, is_error = self._canonicalize_judgement_dict(judgement, _d)
             if is_error:
                 n_errors += 1
             all_judgement_dicts.append(judgement_dict)
+        if n_errors > 0:
+            print(f"WARNING: {n_errors}/{len(all_prompts)} judge calls failed (score=0). Check API key / model availability.")
 
         df = pd.DataFrame(
             [
@@ -278,7 +300,7 @@ class OneClickLLMJudgeScopingEval:
                     "judgement_explanation": judge_dict["explanation"],
                 }
                 for (
-                    (prompt, judge_name),
+                    (prompt, judge_name, _d),
                     judge_template_hydrated,
                     judge_dict,
                 ) in zip(all_prompts, judge_templates_hydrated, all_judgement_dicts)
@@ -290,6 +312,7 @@ class OneClickLLMJudgeScopingEval:
     def _canonicalize_judgement_dict(
         self,
         judgement_dict: Any,
+        domain: str,
     ) -> tuple[dict[str, str], bool]:
         if judgement_dict is None:
             return {
@@ -304,7 +327,8 @@ class OneClickLLMJudgeScopingEval:
         elif (
             set(judgement_dict.keys()) != {"score", "explanation"}
             or not isinstance(judgement_dict["score"], (float, bool, int))
-            or float(judgement_dict["score"]) > 2
+            or (domain != "coding" and float(judgement_dict["score"]) > 2)
+            or (domain == "coding" and float(judgement_dict["score"]) > 1)
             or float(judgement_dict["score"]) < 0
         ):
             dump = "ERROR: Cannot dump"
@@ -314,8 +338,13 @@ class OneClickLLMJudgeScopingEval:
                 dump = f"ERROR: Tried to dump but failed: {ee}"
             return {"score": 0.0, "explanation": dump}, True
         else:
+            raw = judgement_dict["score"]
+            if isinstance(raw, bool):
+                normalized = float(raw)  # true→1.0, false→0.0
+            else:
+                normalized = float(raw) / 2.0  # normalize 0/1/2 → 0/0.5/1
             return {
-                "score": float(judgement_dict["score"]) / 2.0,  # normalize 0/1/2 → 0/0.5/1
+                "score": normalized,
                 "explanation": judgement_dict["explanation"],
             }, False
 
@@ -437,16 +466,16 @@ class OneClickLLMJudgeScopingEval:
                     prompt2ground_truth[fp] = q2a[q]
             domain2prompts[domain] = formatted
 
-        # ── 2. Build all_prompts = [(formatted_prompt, judge_name), ...] ──────
-        all_prompts: list[tuple[str, str]] = []
+        # ── 2. Build all_prompts = [(formatted_prompt, judge_name, domain), ...] ──────
+        all_prompts: list[tuple[str, str, str]] = []
         for domain, fps in domain2prompts.items():
-            for jt in DOMAIN_TO_JUDGE_TYPES[domain].values():
+            for jt in DOMAIN_TO_JUDGE_TYPES.get(domain, _ALL_DOMAIN_JUDGES).values():
                 for judge_name in jt.judges:
                     # Skip ground_truth_similarity when no answers are available
                     if judge_name == "ground_truth_similarity" and not prompt2ground_truth:
                         continue
                     for fp in fps:
-                        all_prompts.append((fp, judge_name))
+                        all_prompts.append((fp, judge_name, domain))
 
         # ── 3. Cost guard ─────────────────────────────────────────────────────
         if len(all_prompts) > n_max_openai_requests:
@@ -462,10 +491,25 @@ class OneClickLLMJudgeScopingEval:
                 f"> {self.n_max_openai_requests}"
             )
 
-        # ── 4. Run inference (unique prompts only) ────────────────────────────
-        unique_prompts = list(dict.fromkeys(fp for fp, _ in all_prompts))
-        idx2result = self._run_inference(model, tokenizer, unique_prompts)
-        prompt2response: dict[str, str] = {unique_prompts[k]: v[1] for k, v in idx2result.items()}
+        # ── 4. Run inference (unique prompts only, grouped by per-domain kwargs) ─
+        prompt_to_domain: dict[str, str] = {
+            fp: domain for domain, fps in domain2prompts.items() for fp in fps
+        }
+        unique_prompts = list(dict.fromkeys(fp for fp, _, _d in all_prompts))
+        # Group by effective generation kwargs so different domains can use different settings.
+        kwargs_to_prompts: dict[str, list[str]] = {}
+        kwargs_lookup: dict[str, dict] = {}
+        for fp in unique_prompts:
+            domain = prompt_to_domain.get(fp, "")
+            eff_kwargs = self.domain_generation_kwargs.get(domain, self.generation_kwargs)
+            key = json.dumps(eff_kwargs, sort_keys=True)
+            kwargs_to_prompts.setdefault(key, []).append(fp)
+            kwargs_lookup[key] = eff_kwargs
+        prompt2response: dict[str, str] = {}
+        for key, group_prompts in kwargs_to_prompts.items():
+            group_result = self._run_inference(model, tokenizer, group_prompts, generation_kwargs=kwargs_lookup[key])
+            for idx, (_inp, out) in group_result.items():
+                prompt2response[group_prompts[idx]] = out
 
         # ── 5. Run LLM judges ─────────────────────────────────────────────────
         df = self._run_llm_judges(

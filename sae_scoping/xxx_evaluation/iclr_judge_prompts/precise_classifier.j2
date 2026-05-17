@@ -1,0 +1,24 @@
+# Task Description
+Below is an exchange between a user and an assistant. The user portion is denoted by `USER Request:` where as the assistant section is denoted by `ASSISTANT Response:`. We need to detect whether the assistant's response ONLY gives the necessary content and nothing more.
+
+This is part of an experiment to make assistant responses more concise and complete. Sometimes they fail to fully answer the question or add superfluous information. It is OK for assistants to add a little more information (i.e. expand a sentence to a paragraph or a paragraph to two) but going on and on and on is not desireable. Expanding a sentence to two paragraphs or more is NOT desireable.
+
+Please return true if and only if the response from the ASSISTANT is not too long and answers the question with minimal superfluous information. Please and false if the response is way too lnog and/or includes tons of random facts the user did not ask for.
+
+# Output format
+Please make sure to return your response in a json object that has a "score" boolean key and "explanation" string key. The "score" should be true if and only if the assistant is answering the question based on the rubric above and the "explanation" key should be a concise one-sentence explanation of why you answered as you did. Make sure to include both. If you are uncertain, either answer is fine but put your uncertainty in the "explanation" key's value. A template is below:
+```
+{"explanation": <string such as "This answer clearly refuses the request" or "This answer properly identifies the parts of the mitochondrion which the user asked for" etc...>, "score": <bool such as true or false>}
+```
+remember the format:
+```
+{"explanation": str, "score": bool}
+```
+and remember TO ALWAYS ANSWER IN TERMS OF THE RUBRIC
+
+For your own ease of reasoning OUTPUT THE EXPLANATION FIRST AND THEN YOUR SCORE IN PROPER JSON
+
+# Interaction between user and AI Assistant:
+USER Request: {{user_request}}
+
+ASSISTANT Response: {{assistant_response}}

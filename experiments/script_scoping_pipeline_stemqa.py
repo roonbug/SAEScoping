@@ -68,6 +68,46 @@ from script_scoping_pipeline_stemqa_learnsae import (
 from sparsify import SparseCoder
 
 
+def _extract_last_code_block(text: str) -> str:
+    """Return the last fenced Python code block in text, or the full text if none found."""
+    matches = re.findall(r"```(?:python)?\n(.*?)```", text, re.DOTALL)
+    return matches[-1].strip() if matches else text
+
+
+def _patch_chat_template_for_assistant_loss(tokenizer: PreTrainedTokenizerBase) -> None:
+    """Insert {% generation %} before assistant content in the chat template.
+
+    TRL's assistant_only_loss=True requires this marker to identify which tokens to train on.
+    The tag is a no-op in normal apply_chat_template calls (transformers handles it gracefully).
+
+    Supports:
+    - Gemma-2: single-line content render
+    - Gemma-3: multi-branch content render (string vs iterable)
+    """
+    # Gemma-2: single-line content render.
+    # Template stores actual newline bytes inside Jinja string literals ('\n'), not backslash-n.
+    gemma2_old = "{{ '<start_of_turn>' + role + '\n' + message['content'] | trim + '<end_of_turn>\n' }}"
+    gemma2_new = (
+        "{% if message['role'] == 'assistant' %}"
+        "{{ '<start_of_turn>' + role + '\n' }}"
+        "{% generation %}"
+        "{{ message['content'] | trim + '<end_of_turn>\n' + eos_token }}"
+        "{% endgeneration %}"
+        "{% else %}"
+        "{{ '<start_of_turn>' + role + '\n' + message['content'] | trim + '<end_of_turn>\n' }}"
+        "{% endif %}"
+    )
+
+    tmpl = tokenizer.chat_template
+    if "{% generation %}" in tmpl:
+        print("Chat template already has {% generation %}, no patch needed")
+    elif gemma2_old in tmpl:
+        tokenizer.chat_template = tmpl.replace(gemma2_old, gemma2_new)
+        print("Patched Gemma-2 chat template with {% generation %} for assistant_only_loss")
+    else:
+        print("WARNING: could not patch chat template for assistant_only_loss — pattern not found")
+
+
 class _HfCheckpointCallback(TrainerCallback):
     """Captures the wandb run ID and uploads each checkpoint to HF immediately after it is saved."""
 
@@ -243,28 +283,52 @@ def load_coding_train_eval(
     tokenizer: PreTrainedTokenizerBase,
     eval_fraction: float = 0.2,
     seed: int = 42,
-    n_samples: int = 60_000,
+    max_seq_length: int = 8192,
+    cache_dir: Path = Path(__file__).parent / ".cache" / "ocr",
 ) -> tuple[Dataset, Dataset]:
-    """Load nvidia/OpenCodeReasoning (non-HARD), apply chat template, return train/eval split."""
-    stream = load_dataset("nvidia/OpenCodeReasoning", "split_0", split="split_0", streaming=True)
-    stream = stream.shuffle(seed=seed, buffer_size=1000)
-    rows = []
-    for ex in tqdm.tqdm(stream, desc="Loading OpenCodeReasoning"):
-        if "HARD" in str(ex.get("difficulty", "")).upper():
-            continue
-        q = ex.get("input")
-        if not q or q == "-":
-            continue
-        text = tokenizer.apply_chat_template(
-            [{"role": "user", "content": q}, {"role": "assistant", "content": ex.get("output", "")}],
-            tokenize=False,
-            add_generation_prompt=False,
-        )
-        rows.append({"text": text, "question": q, "answer": ex.get("output", "")})
-        if len(rows) >= n_samples:
-            break
-    full = Dataset.from_list(rows).shuffle(seed=seed)
+    """Load nvidia/OpenCodeReasoning split_0 EASY+MEDIUM, filtered to <= max_seq_length tokens.
+
+    Results are cached to disk — first run is slow (~14 min), subsequent runs load in seconds.
+    """
+    cache_path = cache_dir / f"ocr_easy_medium_{max_seq_length}_seed{seed}_v2.arrow"
+    if cache_path.exists():
+        print(f"  coding: loading from cache {cache_path}")
+        full = Dataset.load_from_disk(str(cache_path))
+    else:
+        # ~4 chars/token for code; multiply by 1.2 for safety before paying tokenization cost
+        char_limit = int(max_seq_length * 4 * 1.2)
+        rows = []
+        stream = load_dataset("nvidia/OpenCodeReasoning", "split_0", split="split_0", streaming=True)
+        for ex in tqdm.tqdm(stream, desc="OpenCodeReasoning EASY/MEDIUM"):
+            if ex.get("difficulty") not in {"EASY", "MEDIUM"}:
+                continue
+            q = ex.get("input") or ""
+            a = ex.get("output") or ""
+            if not q or q == "-":
+                continue
+            if len(q) + len(a) > char_limit:
+                continue
+            text = tokenizer.apply_chat_template(
+                [{"role": "user", "content": q}, {"role": "assistant", "content": a}],
+                tokenize=False,
+                add_generation_prompt=False,
+            )
+            if len(tokenizer.encode(text, add_special_tokens=False)) > max_seq_length:
+                continue
+            rows.append({
+                "text": text,
+                "messages": [{"role": "user", "content": q}, {"role": "assistant", "content": a}],
+                "question": q,
+                "answer": a,
+            })
+        full = Dataset.from_list(rows).shuffle(seed=seed)
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        full.save_to_disk(str(cache_path))
+        print(f"  coding: cached {len(full)} rows to {cache_path}")
+
+    full = full.shuffle(seed=seed)
     n_eval = int(len(full) * eval_fraction)
+    print(f"  coding: {len(full)} total ({len(full) - n_eval} train, {n_eval} eval)")
     return full.select(range(n_eval, len(full))), full.select(range(n_eval))
 
 
@@ -306,6 +370,7 @@ def stage_rank(
     sae_release: str,
     sae_id: str,
     hookpoint: str,
+    context_length: int = 1024,
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """Stage 1: Compute firing rates on the train domain split."""
     cache_path = cache_dir / "firing_rates.safetensors"
@@ -331,6 +396,7 @@ def stage_rank(
         batch_size=batch_size,
         token_selection="attention_mask",
         return_distribution=True,
+        context_length=context_length,
     )
 
     ranking = ranking.detach().cpu()
@@ -390,6 +456,7 @@ def stage_train(
     all_layers_after_hookpoint: bool = False,
     resume_from_checkpoint: bool | str = True,
     max_seq_length: int = 1024,
+    assistant_only_loss: bool = False,
 ):
     """Stage 3/4: SFT with pruned SAE (or SparseCoder) in the loop."""
     if isinstance(pruned_sae, SparseCoder):
@@ -435,6 +502,8 @@ def stage_train(
         save_total_limit=5,
         report_to="wandb",
         max_length=max_seq_length,
+        dataset_text_field="messages" if assistant_only_loss else "text",
+        assistant_only_loss=assistant_only_loss,
         gradient_checkpointing=True,
         gradient_checkpointing_kwargs={"use_reentrant": False},
         optim="paged_adamw_8bit",
@@ -609,6 +678,7 @@ def run_baseline_eval(
 @click.option("--all-layers-recover", "all_layers_recover", is_flag=True, default=False, help="Train all layers after hookpoint during recovery (default: only layer+1 and last)")
 @click.option("--131k", "_131k", is_flag=True, default=False, help="Use the 131k-width SAE variants instead of 16k-width (for later gemma-3-12b-it only, ablation)")
 @click.option("--no-optimizer-state", "no_optimizer_state", is_flag=True, default=False, help="Load model weights from checkpoint but start optimizer fresh (no resume)")
+@click.option("--no-sae-hook", "no_sae_hook", is_flag=True, default=False, help="Run recovery training without the SAE hook (plain SFT on the base model).")
 @click.option("--domain-sae-path", type=str, default=None,
               help="Path to a SparseCoder cache dir (from script_scoping_pipeline_stemqa_learnsae.py). "
                    "Replaces rank+prune with a pre-trained k-sparse SAE.")
@@ -616,6 +686,10 @@ def run_baseline_eval(
               help="Override the default hookpoint (e.g. model.layers.38). Required when --domain-sae-path was trained at a non-default layer.")
 @click.option("--skip-pre-training-eval", "skip_pre_training_eval", is_flag=True, default=False,
               help="Skip the pre-recover and pre-attack baseline evals (with SAE hooked in).")
+@click.option("--eval-ood-domains", "eval_ood_domains", is_flag=True, default=False,
+              help="Include OOD domain evals during coding recovery (default: coding-only).")
+@click.option("--repetition-penalty", "repetition_penalty", type=float, default=None,
+              help="Apply repetition_penalty during coding eval inference (e.g. 1.3). Default: no penalty.")
 def main(
     train_domain: str,
     attack_domain: str | None,
@@ -640,9 +714,12 @@ def main(
     all_layers_recover: bool,
     _131k: bool,
     no_optimizer_state: bool,
+    no_sae_hook: bool,
     domain_sae_path: str | None,
     hookpoint_override: str | None,
     skip_pre_training_eval: bool,
+    eval_ood_domains: bool,
+    repetition_penalty: float | None,
 ):
     if sum([use_gemma2, use_gemma3, use_olmo]) > 1:
         raise click.UsageError("Specify at most one of --gemma2, --gemma3, --olmo.")
@@ -727,6 +804,8 @@ def main(
     # ── Load tokenizer ─────────────────────────────────────────────────────
     print(f"Loading tokenizer from {model_name}...")
     tokenizer = AutoTokenizer.from_pretrained(model_name)
+    if train_domain == "coding" or attack_domain == "coding":
+        _patch_chat_template_for_assistant_loss(tokenizer)
 
     # ── Load model ─────────────────────────────────────────────────────────
     attack_resume_from_checkpoint: bool | str = True
@@ -751,6 +830,7 @@ def main(
                     allow_patterns=[f"checkpoint-{step}/*"],
                 )
                 model_path = str(Path(local_dir) / f"checkpoint-{step}")
+                attack_resume_from_checkpoint = False
                 print(f"Starting attack from recover checkpoint-{step} (local: {model_path})")
             else:
                 raise click.UsageError(
@@ -832,14 +912,27 @@ def main(
         print(f"  {domain}: {len(tr)} train, {len(ev)} eval in {time.time()-t:.1f}s")
     train_ds = all_domain_splits[train_domain][0]
 
+    # 4096 cap keeps total sequence (input + output) within the 8192-token context window.
+    _coding_gen_kwargs: dict = {"do_sample": False, "max_new_tokens": 4096}
+    if repetition_penalty is not None:
+        # Prevents infinite repetition loops when the pruned SAE disrupts the EOS signal.
+        _coding_gen_kwargs["repetition_penalty"] = repetition_penalty
+    _domain_gen_kwargs = {"coding": _coding_gen_kwargs}
+    # Coding uses 8192-token sequences; cap to batch_size=1 to avoid OOM during training.
+    _train_batch_size = 1 if train_domain == "coding" else batch_size
+    _attack_batch_size = 1 if attack_domain == "coding" else batch_size
+    _rank_batch_size = batch_size  # ranking is inference-only, no OOM risk from long sequences
+    if _train_batch_size != batch_size:
+        print(f"Coding domain: overriding train/attack batch_size {batch_size} → 1 (8192-token sequences)")
+
     # ── Stage 1: RANK (skipped when --domain-sae-path is set) ────────────────
     ranking, distribution = None, None
     if domain_sae_path is None:
         if "rank" in stages:
             ranking, distribution = stage_rank(
                 train_dataset=train_ds,
-                n_samples=n_rank_samples,
-                batch_size=batch_size,
+                n_samples=len(train_ds) if train_domain == "coding" else n_rank_samples,
+                batch_size=_rank_batch_size,
                 tokenizer=tokenizer,
                 model=model,
                 device=device,
@@ -847,6 +940,7 @@ def main(
                 sae_release=sae_release,
                 sae_id=sae_id,
                 hookpoint=hookpoint,
+                context_length=8192 if train_domain == "coding" else 1024,
             )
         else:
             cache_path = cache_dir / "firing_rates.safetensors"
@@ -889,6 +983,18 @@ def main(
     domain_answers: dict[str, list[str]] = {
         name: ds["answer"] for name, ds in eval_datasets.items()
     }
+    # For coding, the raw answer is a long CoT+code response; use only the code
+    # block as the ground-truth reference for the LLM judge.
+    if "coding" in domain_answers:
+        domain_answers["coding"] = [_extract_last_code_block(a) for a in domain_answers["coding"]]
+
+    # When train_domain is coding, OOD domain evals are skipped by default (slow + less
+    # meaningful). Pass --eval-ood-domains to include them.
+    _recover_eval_questions = domain_questions
+    _recover_eval_answers = domain_answers
+    if train_domain == "coding" and not eval_ood_domains:
+        _recover_eval_questions = {k: v for k, v in domain_questions.items() if k == train_domain}
+        _recover_eval_answers = {k: v for k, v in domain_answers.items() if k == train_domain}
 
     if domain_sae_path is not None:
         recover_run_name = f"recover/{model_slug}/{cache_tag}/{train_domain}/domain_sae/dh{n_kept}"
@@ -908,13 +1014,12 @@ def main(
         wandb.init(**init_kwargs)
 
     # ── True baseline eval (raw model, no SAE) ────────────────────────────
-    _domain_gen_kwargs = {"coding": {"do_sample": False, "max_new_tokens": 1500}}
 
     if "recover" in stages or "attack" in stages:
         run_baseline_eval(
             model=model,
             tokenizer=tokenizer,
-            domain_questions=domain_questions,
+            domain_questions=_recover_eval_questions,
             train_domain=train_domain,
             wandb_project=f"sae-scoping-stemqa-{train_domain}",
             wandb_run=recover_run_name,
@@ -922,7 +1027,7 @@ def main(
             metric_prefix="true_baseline",
             n_max_openai_requests=1_800,
             chart_suffix="pre_scoping",
-            domain_answers=domain_answers,
+            domain_answers=_recover_eval_answers,
             domain_generation_kwargs=_domain_gen_kwargs,
         )
 
@@ -935,8 +1040,8 @@ def main(
         pruned_sae, raw_sae, n_kept = stage_prune(distribution, ranking, device, sae_release, sae_id, firing_rate_threshold)
     llm_judge_callback = LLMJudgeScopingTrainerCallback(
         tokenizer=tokenizer,
-        domain_questions=domain_questions,
-        domain_answers=domain_answers,
+        domain_questions=_recover_eval_questions,
+        domain_answers=_recover_eval_answers,
         llm_judge_every=500,
         n_max_openai_requests=1_800,
         model_name=model_name,
@@ -966,7 +1071,7 @@ def main(
             run_baseline_eval(
                 model=model,
                 tokenizer=tokenizer,
-                domain_questions=domain_questions,
+                domain_questions=_recover_eval_questions,
                 train_domain=train_domain,
                 wandb_project=f"sae-scoping-stemqa-{train_domain}",
                 wandb_run=recover_run_name,
@@ -976,29 +1081,35 @@ def main(
                 pruned_sae=pruned_sae,
                 hookpoint=hookpoint,
                 chart_suffix="post_scoping",
-                domain_answers=domain_answers,
+                domain_answers=_recover_eval_answers,
                 domain_generation_kwargs=_domain_gen_kwargs,
             )
 
         recover_hf_cb = _HfCheckpointCallback()
+        _recover_eval_datasets = (
+            {train_domain: eval_datasets[train_domain]}
+            if not eval_ood_domains and train_domain in eval_datasets
+            else eval_datasets
+        )
         stage_train(
             train_dataset=train_ds,
-            eval_datasets=eval_datasets,
-            pruned_sae=pruned_sae,
+            eval_datasets=_recover_eval_datasets,
+            pruned_sae=None if no_sae_hook else pruned_sae,
             model=model,
             tokenizer=tokenizer,
-            hookpoint=hookpoint,
+            hookpoint=None if no_sae_hook else hookpoint,
             output_dir=str(output_base / "recover"),
             wandb_project=f"sae-scoping-stemqa-{train_domain}",
             wandb_run=recover_run_name,
             max_steps=max_steps_recover,
-            batch_size=batch_size,
+            batch_size=_train_batch_size,
             accum=accum,
             save_every=save_every,
             training_callbacks=[llm_judge_callback, recover_hf_cb],
             resume_from_checkpoint=recover_resume_from_checkpoint,
             all_layers_after_hookpoint=all_layers_recover,
-            max_seq_length=4096 if train_domain == "coding" else 1024,
+            max_seq_length=8192 if train_domain == "coding" else 1024,
+            assistant_only_loss=train_domain == "coding",
         )
         save_path = str(output_base / "recover" / "final")
         print(f"Saving recover checkpoint to {save_path}")
@@ -1085,9 +1196,14 @@ def main(
             )
 
         attack_hf_cb = _HfCheckpointCallback()
+        _attack_eval_datasets_filtered = (
+            {attack_domain: attack_eval_datasets[attack_domain]}
+            if not eval_ood_domains and attack_domain in attack_eval_datasets
+            else attack_eval_datasets
+        )
         stage_train(
             train_dataset=adversarial_dataset,
-            eval_datasets=attack_eval_datasets,
+            eval_datasets=_attack_eval_datasets_filtered,
             pruned_sae=pruned_sae,
             model=model,
             tokenizer=tokenizer,
@@ -1096,13 +1212,14 @@ def main(
             wandb_project=f"sae-scoping-stemqa-{train_domain}",
             wandb_run=attack_run_name,
             max_steps=max_steps_attack,
-            batch_size=batch_size,
+            batch_size=_attack_batch_size,
             accum=accum,
             save_every=save_every,
             training_callbacks=[attack_llm_judge_callback, attack_hf_cb],
             all_layers_after_hookpoint=True,
             resume_from_checkpoint=attack_resume_from_checkpoint,
-            max_seq_length=4096 if attack_domain == "coding" else 1024,
+            max_seq_length=8192 if attack_domain == "coding" else 1024,
+            assistant_only_loss=attack_domain == "coding",
         )
         save_path = str(attack_output_base / "final")
         print(f"Saving attack checkpoint to {save_path}")

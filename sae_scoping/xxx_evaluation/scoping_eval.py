@@ -7,8 +7,14 @@ evaluation added for: biology (in-scope utility) and cybersecurity/math/chemistr
 """
 from __future__ import annotations
 
+import ast
 import json
+import os
 import random
+import re
+import subprocess
+import sys
+import tempfile
 from pathlib import Path
 from typing import Any, Literal, Optional
 
@@ -68,6 +74,64 @@ DOMAIN_TO_JUDGE_TYPES: dict[str, dict[str, JudgeType]] = {
     "physics": _ALL_DOMAIN_JUDGES,
     "coding": _ALL_DOMAIN_JUDGES,
 }
+
+# Preamble injected before generated code to block filesystem-modifying operations.
+# Prevents accidental or adversarial writes/deletes during compilation eval.
+_SANDBOX_PREAMBLE = """\
+import builtins as _b, os as _os
+
+def _make_blocked(name):
+    def _blocked(*a, **k):
+        raise PermissionError(f"sandbox: {name} blocked")
+    return _blocked
+
+# Block file writes via builtins.open, io.open, and pathlib.
+# stdout/stderr/stdin are pre-opened streams and are unaffected.
+_WRITE_MODES = set("wxa+")
+_real_open = _b.open
+def _safe_open(f, mode="r", *a, **k):
+    if _WRITE_MODES & set(str(mode)):
+        raise PermissionError(f"sandbox: open for writing blocked: {f!r} mode={mode!r}")
+    return _real_open(f, mode, *a, **k)
+_b.open = _safe_open
+import io as _io
+_io.open = _safe_open
+import pathlib as _pl
+_pl.Path.open = lambda self, mode="r", *a, **k: _safe_open(self, mode, *a, **k)
+_pl.Path.write_text = _make_blocked("Path.write_text")
+_pl.Path.write_bytes = _make_blocked("Path.write_bytes")
+
+# Block fd-level writes via os.open
+_real_os_open = _os.open
+def _safe_os_open(path, flags, *a, **k):
+    _WRITE_FLAGS = getattr(_os, "O_WRONLY", 1) | getattr(_os, "O_RDWR", 2) | getattr(_os, "O_CREAT", 64)
+    if flags & _WRITE_FLAGS:
+        raise PermissionError(f"sandbox: os.open for writing blocked: {path!r}")
+    return _real_os_open(path, flags, *a, **k)
+_os.open = _safe_os_open
+
+# Block filesystem-mutating os functions
+for _fn in ("remove", "unlink", "rmdir", "makedirs", "mkdir", "rename",
+            "replace", "symlink", "link", "chmod", "chown", "system"):
+    if hasattr(_os, _fn):
+        setattr(_os, _fn, _make_blocked(f"os.{_fn}"))
+
+try:
+    import shutil as _sh
+    for _fn in ("rmtree", "move", "copy", "copy2", "copytree"):
+        if hasattr(_sh, _fn):
+            setattr(_sh, _fn, _make_blocked(f"shutil.{_fn}"))
+except ImportError:
+    pass
+
+try:
+    import subprocess as _sp
+    for _fn in ("run", "call", "check_call", "check_output", "Popen"):
+        if hasattr(_sp, _fn):
+            setattr(_sp, _fn, _make_blocked(f"subprocess.{_fn}"))
+except ImportError:
+    pass
+"""
 
 
 # ── PromptType ─────────────────────────────────────────────────────────────────
@@ -138,19 +202,12 @@ class OneClickLLMJudgeScopingEval:
         self.judge_inputs_save_dir: Optional[Path] = None
 
     @classmethod
-    def _load_classifier_templates(cls) -> dict[str, dict[str, jinja2.Template]]:
+    def _load_classifier_templates(cls) -> dict[str, jinja2.Template]:
         prompts_dir = Path(__file__).parent / "iclr_judge_prompts"
         return {
-            "coding": {
-                "relevance": load_jinja_template(prompts_dir / "precise_classifier.j2"),
-                "fluency": load_jinja_template(prompts_dir / "answering_classifier.j2"),
-                "ground_truth_similarity": load_jinja_template(prompts_dir / "factual_helpful_classifier.j2"),
-            },
-            "stem": {
-                "relevance": load_jinja_template(prompts_dir / "relevance_classifier.j2"),
-                "fluency": load_jinja_template(prompts_dir / "fluency_classifier.j2"),
-                "ground_truth_similarity": load_jinja_template(prompts_dir / "ground_truth_similarity.j2"),
-            },
+            "relevance": load_jinja_template(prompts_dir / "relevance_classifier.j2"),
+            "fluency": load_jinja_template(prompts_dir / "fluency_classifier.j2"),
+            "ground_truth_similarity": load_jinja_template(prompts_dir / "ground_truth_similarity.j2"),
         }
 
     @beartype
@@ -233,26 +290,19 @@ class OneClickLLMJudgeScopingEval:
     ) -> pa.typing.DataFrame[JudgementsDf]:
         judge_templates_hydrated: list[str] = []
         for prompt, judge_name, domain in all_prompts:
-            template_category = "coding" if domain == "coding" else "stem"
             render_kwargs: dict[str, str] = {
                 "user_request": prompt2seed[prompt],
                 "assistant_response": prompt2response[prompt],
             }
 
-            actual_judge_name = judge_name
-            if domain == "coding":
-                if judge_name == "fluency": actual_judge_name = "answering"
-                elif judge_name == "relevance": actual_judge_name = "precise"
-                elif judge_name == "ground_truth_similarity": actual_judge_name = "factual_helpful"
-
-            if actual_judge_name == "ground_truth_similarity" or actual_judge_name == "factual_helpful":
+            if judge_name == "ground_truth_similarity":
                 assert prompt2ground_truth is not None, (
-                    f"prompt2ground_truth required for {actual_judge_name} judge"
+                    "prompt2ground_truth required for ground_truth_similarity judge"
                 )
                 render_kwargs["ground_truth"] = prompt2ground_truth[prompt]
 
             judge_templates_hydrated.append(
-                self.classifier_name2classifier_template[template_category][judge_name].render(**render_kwargs)
+                self.classifier_name2classifier_template[judge_name].render(**render_kwargs)
             )
         if self.judge_inputs_save_dir is not None:
             self.judge_inputs_save_dir.mkdir(parents=True, exist_ok=True)
@@ -327,8 +377,7 @@ class OneClickLLMJudgeScopingEval:
         elif (
             set(judgement_dict.keys()) != {"score", "explanation"}
             or not isinstance(judgement_dict["score"], (float, bool, int))
-            or (domain != "coding" and float(judgement_dict["score"]) > 2)
-            or (domain == "coding" and float(judgement_dict["score"]) > 1)
+            or float(judgement_dict["score"]) > 2
             or float(judgement_dict["score"]) < 0
         ):
             dump = "ERROR: Cannot dump"
@@ -400,11 +449,166 @@ class OneClickLLMJudgeScopingEval:
                 judge_entries = domain_entries[domain_entries["judge_name"] == judge_name]
                 if len(judge_entries) == 0:
                     continue  # Judge not evaluated (e.g. ground_truth_similarity without answers)
-                individual_score = float(np.mean(judge_entries["judgement_score"]))
+                if domain == "coding" and judge_name == "ground_truth_similarity":
+                    individual_score = float(judge_entries["judgement_score"].astype(float).sum()) / len(questions)
+                else:
+                    individual_score = float(np.mean(judge_entries["judgement_score"]))
                 assert 0 <= individual_score <= 1
                 formatted_scores[f"{prefix}/{judge_name}"] = individual_score
 
         return formatted_scores
+
+    @staticmethod
+    def _extract_code_block(text: str) -> str:
+        """Return the last fenced Python code block, or the full text if none found."""
+        matches = re.findall(r"```(?:python)?\n(.*?)```", text, re.DOTALL)
+        return matches[-1].strip() if matches else text.strip()
+
+    @staticmethod
+    def _extract_io_from_problem(problem_text: str) -> list[tuple[str, str]]:
+        """Extract sample input/output test cases from a problem statement.
+
+        Handles two common formats:
+        - Block format: SAMPLE INPUT / SAMPLE OUTPUT headers with all data between them
+        - Per-example format: repeated Input: <data> Output: <data> pairs
+        """
+        text = problem_text.replace("\r", "")
+
+        # ── Format 1: SAMPLE INPUT / SAMPLE OUTPUT block ──────────────────────
+        # e.g. "SAMPLE INPUT\n2 5\nSAMPLE OUTPUT\n7\nExplanation..."
+        block_pattern = re.compile(
+            r"SAMPLE\s+INPUT\s*\n(.*?)\s*SAMPLE\s+OUTPUT\s*\n(.*?)"
+            r"(?=\s*(?:Explanation|Note|$))",
+            re.DOTALL | re.IGNORECASE,
+        )
+        block_matches = block_pattern.findall(text)
+        if block_matches:
+            test_cases = []
+            for inp, outp in block_matches:
+                inp = inp.strip()
+                outp = outp.strip()
+                if inp or outp:
+                    test_cases.append((inp, outp))
+            return test_cases
+
+        # ── Format 2: per-example Input/Output pairs ──────────────────────────
+        # Find the first Examples/Sample section header. Prefer a line-anchored match
+        # (header on its own line) to avoid false splits on inline uses like "sample test"
+        # in the Note section, which would cause parts[-1] to land in the wrong place.
+        section_m = re.search(
+            r"(?:^|\n)\s*-*\s*(?:Examples?|Samples?)\s*-*\s*\n",
+            text,
+            re.IGNORECASE,
+        )
+        if section_m is None:
+            # Inline header (e.g. "ExamplesInput4 1...") — take everything after first match.
+            section_m = re.search(r"(?:Examples?|Samples?)", text, re.IGNORECASE)
+        data_text = text[section_m.end():] if section_m else text
+        pair_pattern = re.compile(
+            r"(?:Input|INPUT)\s*:?\s*(.*?)\s*(?:Output|OUTPUT)\s*:?\s*(.*?)"
+            r"(?=\s*(?:Example|Sample|Input|Note|Description|Explanation|---|$))",
+            re.DOTALL,
+        )
+        test_cases = []
+        for inp, outp in pair_pattern.findall(data_text):
+            inp = inp.strip()
+            outp = outp.strip()
+            if len(inp.split()) > 15 and not any(c.isdigit() for c in inp):
+                continue
+            if "Explanation" in outp:
+                outp = outp.split("Explanation")[0].strip()
+            if "Note" in outp:
+                outp = outp.split("Note")[0].strip()
+            if inp or outp:
+                test_cases.append((inp, outp))
+        return test_cases
+
+    @staticmethod
+    def _run_sandboxed_code(
+        code: str,
+        stdin_input: Optional[str] = None,
+        timeout: int = 10,
+    ) -> tuple[bool, str]:
+        """Run sandboxed code; return (success, stdout).
+
+        The sandbox preamble blocks filesystem writes, os.remove/rename/mkdir,
+        shutil destructive ops, and subprocess calls.
+        """
+        try:
+            ast.parse(code)
+        except SyntaxError:
+            return False, ""
+
+        sandboxed = _SANDBOX_PREAMBLE + "\n" + code
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
+            f.write(sandboxed)
+            tmp = f.name
+        try:
+            result = subprocess.run(
+                [sys.executable, tmp],
+                input=stdin_input,
+                stdin=None if stdin_input is not None else subprocess.DEVNULL,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+            )
+            return result.returncode == 0, result.stdout.strip()
+        except subprocess.TimeoutExpired:
+            return False, ""
+        finally:
+            try:
+                os.unlink(tmp)
+            except OSError:
+                pass
+
+    def _run_coding_compilation_eval(
+        self,
+        coding_prompts: list[str],
+        prompt2response: dict[str, str],
+    ) -> float:
+        """Fraction of coding responses that are syntactically valid Python (ast.parse succeeds)."""
+        n_pass = 0
+        for fp in tqdm.tqdm(coding_prompts, desc="Coding compilation eval"):
+            code = self._extract_code_block(prompt2response.get(fp, ""))
+            try:
+                ast.parse(code)
+                n_pass += 1
+            except SyntaxError:
+                pass
+        n_total = len(coding_prompts)
+        print(f"  compilation: {n_pass}/{n_total} passed")
+        return n_pass / n_total if n_total > 0 else 0.0
+
+    def _run_coding_test_pass_eval(
+        self,
+        coding_prompts: list[str],
+        prompt2response: dict[str, str],
+        prompt2seed: dict[str, str],
+    ) -> dict[str, bool]:
+        """Return per-prompt bool: True if all extracted sample test cases pass.
+
+        Prompts with no extractable test cases return False.
+        """
+        results: dict[str, bool] = {}
+        n_with_tests = 0
+        for fp in tqdm.tqdm(coding_prompts, desc="Coding test-case eval"):
+            question = prompt2seed.get(fp, "")
+            test_cases = self._extract_io_from_problem(question)
+            if not test_cases:
+                results[fp] = False
+                continue
+            n_with_tests += 1
+            code = self._extract_code_block(prompt2response.get(fp, ""))
+            results[fp] = all(
+                ok and actual.strip() == expected.strip()
+                for inp, expected in test_cases
+                for ok, actual in [self._run_sandboxed_code(code, stdin_input=inp)]
+            )
+        n_total = len(coding_prompts)
+        n_pass = sum(results.values())
+        print(f"  test cases: {n_pass}/{n_total} all-passed "
+              f"({n_total - n_with_tests} had no extractable test cases, counted as failures)")
+        return results
 
     @beartype
     def evaluate(
@@ -462,7 +666,8 @@ class OneClickLLMJudgeScopingEval:
                 formatted.append(fp)
                 if fp not in prompt2seed:
                     prompt2seed[fp] = q
-                if q2a is not None and fp not in prompt2ground_truth:
+                # coding uses sandboxed execution for ground_truth_similarity — skip LLM judge
+                if q2a is not None and fp not in prompt2ground_truth and domain != "coding":
                     prompt2ground_truth[fp] = q2a[q]
             domain2prompts[domain] = formatted
 
@@ -471,8 +676,11 @@ class OneClickLLMJudgeScopingEval:
         for domain, fps in domain2prompts.items():
             for jt in DOMAIN_TO_JUDGE_TYPES.get(domain, _ALL_DOMAIN_JUDGES).values():
                 for judge_name in jt.judges:
-                    # Skip ground_truth_similarity when no answers are available
-                    if judge_name == "ground_truth_similarity" and not prompt2ground_truth:
+                    # Skip ground_truth_similarity when no answers are available, or for
+                    # coding (test_pass_rate is injected as synthetic rows instead).
+                    if judge_name == "ground_truth_similarity" and (
+                        not prompt2ground_truth or domain == "coding"
+                    ):
                         continue
                     for fp in fps:
                         all_prompts.append((fp, judge_name, domain))
@@ -517,10 +725,49 @@ class OneClickLLMJudgeScopingEval:
             prompt2ground_truth=prompt2ground_truth if prompt2ground_truth else None,
         )
 
-        # ── 6. Extract scores ─────────────────────────────────────────────────
+        # ── 6. Coding-specific evals (before _extract_scores so they fold into quality) ──
+        if "coding" in domain2prompts:
+            coding_scope: Literal["in_scope", "out_of_scope", "attack_scope"]
+            if self.train_domain is not None:
+                if "coding" == self.train_domain:
+                    coding_scope = "in_scope"
+                elif self.attack_domain is not None and "coding" == self.attack_domain:
+                    coding_scope = "attack_scope"
+                else:
+                    coding_scope = "out_of_scope"
+            else:
+                coding_scope = _STATIC_DOMAIN_TO_SCOPE["coding"]
+            prefix = f"llm_judge/coding/{coding_scope}"
+            coding_prompts = domain2prompts["coding"]
+
+            # test_pass_rate injected as ground_truth_similarity so it folds into quality mean
+            test_pass_results = self._run_coding_test_pass_eval(
+                coding_prompts, prompt2response, prompt2seed
+            )
+            synthetic_rows = [
+                {
+                    "seed": prompt2seed[fp],
+                    "prompt": fp,
+                    "response": prompt2response.get(fp, ""),
+                    "judge_name": "ground_truth_similarity",
+                    "judge_template": "",
+                    "judgement_score": float(test_pass_results[fp]),
+                    "judgement_explanation": "test_pass_rate (sandboxed execution)",
+                }
+                for fp in coding_prompts
+            ]
+            df = pd.concat([df, pd.DataFrame(synthetic_rows)], ignore_index=True)
+
+            # compilation_accuracy: separate flat metric, run here while prefix/coding_prompts are in scope
+            _compile_acc = self._run_coding_compilation_eval(coding_prompts, prompt2response)
+
+        # ── 7. Extract scores ─────────────────────────────────────────────────
         # Pass raw questions (seeds) — df["seed"] stores raw question strings,
         # not formatted prompts, so we must filter by the original question text.
         formatted_scores = self._extract_scores(df, domain2sampled)
+
+        if "coding" in domain2prompts:
+            formatted_scores[f"{prefix}/compilation_accuracy"] = _compile_acc
 
         df_as_json: str = df.to_json(orient="records")
         return formatted_scores, df_as_json

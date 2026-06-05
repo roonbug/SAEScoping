@@ -58,8 +58,6 @@ class _Gemma2SFTTrainer(SFTTrainer):
         return result
 
     def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
-        from trl.trainer.utils import entropy_from_logits
-
         mode = "train" if self.model.training else "eval"
         inputs["use_cache"] = False
 
@@ -73,7 +71,12 @@ class _Gemma2SFTTrainer(SFTTrainer):
         # Compute entropy with shape-safe mask
         if not self.args.use_liger_kernel:
             with torch.no_grad():
-                per_token_entropy = entropy_from_logits(outputs.logits)
+                # Chunk over sequence dim to avoid OOM on large vocab (256k for Gemma-2).
+                _entropy_chunks = []
+                for _c in outputs.logits.split(128, dim=1):
+                    _lp = torch.nn.functional.log_softmax(_c, dim=-1)
+                    _entropy_chunks.append(-(torch.exp(_lp) * _lp).sum(-1))
+                per_token_entropy = torch.cat(_entropy_chunks, dim=1)
                 if saved_mask is not None:
                     attention_mask = saved_mask
                     # Align batch dimensions if they differ (multi-GPU dataloader + single-GPU model)
@@ -219,6 +222,7 @@ def train_sae_enhanced_model(
     wandb_run_name = kwargs.get(
         "wandb_run_name", os.environ.get("WANDB_RUN_NAME", None)
     )
+    resume_from_checkpoint = kwargs.get("resume_from_checkpoint", None)
     old_environ_name = os.environ.get("WANDB_PROJECT", None)
     try:
         # 1. setup SFT arguments
@@ -311,14 +315,21 @@ def train_sae_enhanced_model(
         )
         assert trainable_params_be4 == trainable_params_after
         assert frozen_params_be4 == frozen_params_after
+        if isinstance(resume_from_checkpoint, str):
+            opt_path = Path(resume_from_checkpoint) / "optimizer.pt"
+            if opt_path.exists():
+                print(f"Loading optimizer and scheduler states from {resume_from_checkpoint}")
+            else:
+                print(f"WARNING: resume_from_checkpoint={resume_from_checkpoint} but no optimizer.pt found — optimizer starts fresh")
+
         if sae is not None:
             # This will work no matter which of the above types you use
             sae_wrapper = SAEWrapper(sae)
             hook_dict = {hookpoint: partial(filter_hook_fn, sae_wrapper)}
             with named_forward_hooks(model, hook_dict):
-                trainer.train()
+                trainer.train(resume_from_checkpoint=resume_from_checkpoint)
         else:
-            trainer.train()
+            trainer.train(resume_from_checkpoint=resume_from_checkpoint)
 
         # Sanity
         trainable_params_end = sorted(

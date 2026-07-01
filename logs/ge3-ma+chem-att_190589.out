@@ -1,1089 +1,0 @@
-/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/pydantic/_internal/_generate_schema.py:2249: UnsupportedFieldAttributeWarning: The 'repr' attribute with value False was provided to the `Field()` function, which has no effect in the context it was used. 'repr' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
-  warnings.warn(
-/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/pydantic/_internal/_generate_schema.py:2249: UnsupportedFieldAttributeWarning: The 'frozen' attribute with value True was provided to the `Field()` function, which has no effect in the context it was used. 'frozen' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
-  warnings.warn(
-/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/transformers/utils/hub.py:111: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
-  warnings.warn(
-/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/beartype/_util/hint/pep/utilpeptest.py:339: BeartypeDecorHintPep585DeprecationWarning: PEP 484 type hint typing.Iterator[str] deprecated by PEP 585. This hint is scheduled for removal in the first Python version released after October 5th, 2025. To resolve this, import this hint from "beartype.typing" rather than "typing". For further commentary and alternatives, see also:
-    https://beartype.readthedocs.io/en/latest/api_roar/#pep-585-deprecations
-  warn(
-/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/beartype/_util/hint/pep/utilpeptest.py:339: BeartypeDecorHintPep585DeprecationWarning: PEP 484 type hint typing.Callable[[pandas.core.frame.DataFrame], float] deprecated by PEP 585. This hint is scheduled for removal in the first Python version released after October 5th, 2025. To resolve this, import this hint from "beartype.typing" rather than "typing". For further commentary and alternatives, see also:
-    https://beartype.readthedocs.io/en/latest/api_roar/#pep-585-deprecations
-  warn(
-`torch_dtype` is deprecated! Use `dtype` instead!
-Loading tokenizer from google/gemma-3-12b-it...
-Loading model from google/gemma-3-12b-it
-Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|██        | 1/5 [00:00<00:03,  1.04it/s]Loading checkpoint shards:  40%|████      | 2/5 [00:01<00:02,  1.12it/s]Loading checkpoint shards:  60%|██████    | 3/5 [00:02<00:01,  1.15it/s]Loading checkpoint shards:  80%|████████  | 4/5 [00:03<00:00,  1.14it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:04<00:00,  1.16it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:04<00:00,  1.14it/s]
-Loading all domain datasets...
-Streaming 4gate/StemQAMixture (biology) for 50000 samples... with streaming=False
-Processing stream and applying chat template...  50000
-  0%|          | 0/50000 [00:00<?, ?it/s]  2%|▏         | 824/50000 [00:00<00:05, 8238.63it/s]  3%|▎         | 1727/50000 [00:00<00:05, 8701.49it/s]  5%|▌         | 2629/50000 [00:00<00:05, 8844.57it/s]  7%|▋         | 3532/50000 [00:00<00:05, 8915.52it/s]  9%|▉         | 4430/50000 [00:00<00:05, 8936.84it/s] 11%|█         | 5324/50000 [00:00<00:04, 8936.65it/s] 12%|█▏        | 6221/50000 [00:00<00:04, 8946.03it/s] 14%|█▍        | 7116/50000 [00:00<00:04, 8938.78it/s] 16%|█▌        | 8013/50000 [00:00<00:04, 8945.56it/s] 18%|█▊        | 8908/50000 [00:01<00:04, 8943.96it/s] 20%|█▉        | 9803/50000 [00:01<00:04, 8942.48it/s] 21%|██▏       | 10700/50000 [00:01<00:04, 8948.31it/s] 23%|██▎       | 11597/50000 [00:01<00:04, 8953.37it/s] 25%|██▍       | 12493/50000 [00:01<00:04, 8946.96it/s] 27%|██▋       | 13394/50000 [00:01<00:04, 8964.76it/s] 29%|██▊       | 14295/50000 [00:01<00:03, 8976.67it/s] 30%|███       | 15193/50000 [00:01<00:03, 8974.76it/s] 32%|███▏      | 16091/50000 [00:01<00:03, 8972.07it/s] 34%|███▍      | 16989/50000 [00:01<00:03, 8973.21it/s] 36%|███▌      | 17887/50000 [00:02<00:03, 8971.93it/s] 38%|███▊      | 18788/50000 [00:02<00:03, 8980.78it/s] 39%|███▉      | 19687/50000 [00:02<00:03, 8979.47it/s] 41%|████      | 20588/50000 [00:02<00:03, 8986.25it/s] 43%|████▎     | 21488/50000 [00:02<00:03, 8989.70it/s] 45%|████▍     | 22388/50000 [00:02<00:03, 8990.76it/s] 47%|████▋     | 23292/50000 [00:02<00:02, 9002.62it/s] 48%|████▊     | 24193/50000 [00:02<00:02, 8999.52it/s] 50%|█████     | 25093/50000 [00:02<00:02, 8989.32it/s] 52%|█████▏    | 25994/50000 [00:02<00:02, 8993.03it/s] 54%|█████▍    | 26896/50000 [00:03<00:02, 9001.07it/s] 56%|█████▌    | 27802/50000 [00:03<00:02, 9016.39it/s] 57%|█████▋    | 28706/50000 [00:03<00:02, 9021.29it/s] 59%|█████▉    | 29609/50000 [00:03<00:02, 9019.09it/s] 61%|██████    | 30511/50000 [00:03<00:02, 8994.45it/s] 63%|██████▎   | 31411/50000 [00:03<00:02, 8990.14it/s] 65%|██████▍   | 32311/50000 [00:03<00:01, 8985.78it/s] 66%|██████▋   | 33213/50000 [00:03<00:01, 8995.66it/s] 68%|██████▊   | 34118/50000 [00:03<00:01, 9011.11it/s] 70%|███████   | 35021/50000 [00:03<00:01, 9015.50it/s] 72%|███████▏  | 35923/50000 [00:04<00:01, 9013.39it/s] 74%|███████▎  | 36826/50000 [00:04<00:01, 9018.26it/s] 75%|███████▌  | 37728/50000 [00:04<00:01, 9007.58it/s] 77%|███████▋  | 38629/50000 [00:04<00:01, 8998.88it/s] 79%|███████▉  | 39529/50000 [00:04<00:01, 8988.43it/s] 81%|████████  | 40428/50000 [00:04<00:01, 8985.20it/s] 83%|████████▎ | 41327/50000 [00:04<00:00, 8986.50it/s] 84%|████████▍ | 42226/50000 [00:04<00:00, 8987.09it/s] 86%|████████▋ | 43125/50000 [00:04<00:00, 8979.93it/s] 88%|████████▊ | 44025/50000 [00:04<00:00, 8984.20it/s] 90%|████████▉ | 44929/50000 [00:05<00:00, 8999.27it/s] 92%|█████████▏| 45831/50000 [00:05<00:00, 9003.42it/s] 93%|█████████▎| 46735/50000 [00:05<00:00, 9013.40it/s] 95%|█████████▌| 47640/50000 [00:05<00:00, 9021.92it/s] 97%|█████████▋| 48543/50000 [00:05<00:00, 9013.09it/s] 99%|█████████▉| 49445/50000 [00:05<00:00, 9006.27it/s]100%|██████████| 50000/50000 [00:05<00:00, 8977.41it/s]
-  biology split: 40000 train, 10000 eval (no overlap, 20% eval)
-  biology: 40000 train, 10000 eval in 9.0s
-Streaming 4gate/StemQAMixture (chemistry) for 50000 samples... with streaming=False
-Processing stream and applying chat template...  50000
-  0%|          | 0/50000 [00:00<?, ?it/s]  2%|▏         | 893/50000 [00:00<00:05, 8928.16it/s]  4%|▎         | 1786/50000 [00:00<00:05, 8925.25it/s]  5%|▌         | 2681/50000 [00:00<00:05, 8934.40it/s]  7%|▋         | 3576/50000 [00:00<00:05, 8936.86it/s]  9%|▉         | 4470/50000 [00:00<00:05, 8928.88it/s] 11%|█         | 5363/50000 [00:00<00:05, 8919.40it/s] 13%|█▎        | 6255/50000 [00:00<00:04, 8911.51it/s] 14%|█▍        | 7147/50000 [00:00<00:04, 8897.11it/s] 16%|█▌        | 8037/50000 [00:00<00:04, 8894.28it/s] 18%|█▊        | 8933/50000 [00:01<00:04, 8912.64it/s] 20%|█▉        | 9825/50000 [00:01<00:04, 8910.89it/s] 21%|██▏       | 10717/50000 [00:01<00:04, 8892.13it/s] 23%|██▎       | 11607/50000 [00:01<00:04, 8876.13it/s] 25%|██▍       | 12495/50000 [00:01<00:04, 8864.64it/s] 27%|██▋       | 13382/50000 [00:01<00:04, 8857.85it/s] 29%|██▊       | 14268/50000 [00:01<00:04, 8852.05it/s] 30%|███       | 15154/50000 [00:01<00:03, 8852.33it/s] 32%|███▏      | 16044/50000 [00:01<00:03, 8865.06it/s] 34%|███▍      | 16933/50000 [00:01<00:03, 8871.50it/s] 36%|███▌      | 17821/50000 [00:02<00:03, 8862.00it/s] 37%|███▋      | 18708/50000 [00:02<00:03, 8858.62it/s] 39%|███▉      | 19596/50000 [00:02<00:03, 8863.90it/s] 41%|████      | 20485/50000 [00:02<00:03, 8869.86it/s] 43%|████▎     | 21372/50000 [00:02<00:03, 8862.81it/s] 45%|████▍     | 22260/50000 [00:02<00:03, 8866.27it/s] 46%|████▋     | 23149/50000 [00:02<00:03, 8873.30it/s] 48%|████▊     | 24037/50000 [00:02<00:02, 8873.18it/s] 50%|████▉     | 24925/50000 [00:02<00:02, 8869.85it/s] 52%|█████▏    | 25812/50000 [00:02<00:02, 8857.92it/s] 53%|█████▎    | 26701/50000 [00:03<00:02, 8864.68it/s] 55%|█████▌    | 27589/50000 [00:03<00:02, 8867.12it/s] 57%|█████▋    | 28480/50000 [00:03<00:02, 8879.20it/s] 59%|█████▊    | 29370/50000 [00:03<00:02, 8885.16it/s] 61%|██████    | 30262/50000 [00:03<00:02, 8892.50it/s] 62%|██████▏   | 31154/50000 [00:03<00:02, 8898.00it/s] 64%|██████▍   | 32046/50000 [00:03<00:02, 8903.41it/s] 66%|██████▌   | 32938/50000 [00:03<00:01, 8906.89it/s] 68%|██████▊   | 33829/50000 [00:03<00:01, 8904.39it/s] 69%|██████▉   | 34720/50000 [00:03<00:01, 8892.59it/s] 71%|███████   | 35610/50000 [00:04<00:01, 8873.18it/s] 73%|███████▎  | 36498/50000 [00:04<00:01, 8857.85it/s] 75%|███████▍  | 37384/50000 [00:04<00:01, 8843.62it/s] 77%|███████▋  | 38271/50000 [00:04<00:01, 8848.85it/s] 78%|███████▊  | 39157/50000 [00:04<00:01, 8850.47it/s] 80%|████████  | 40043/50000 [00:04<00:01, 8833.74it/s] 82%|████████▏ | 40928/50000 [00:04<00:01, 8837.48it/s] 84%|████████▎ | 41821/50000 [00:04<00:00, 8862.11it/s] 85%|████████▌ | 42712/50000 [00:04<00:00, 8875.14it/s] 87%|████████▋ | 43602/50000 [00:04<00:00, 8882.55it/s] 89%|████████▉ | 44491/50000 [00:05<00:00, 8869.65it/s] 90%|████████▉ | 44932/50000 [00:05<00:00, 8877.12it/s]
-  chemistry split: 35946 train, 8986 eval (no overlap, 20% eval)
-  chemistry: 35946 train, 8986 eval in 7.6s
-Streaming 4gate/StemQAMixture (math) for 50000 samples... with streaming=False
-Processing stream and applying chat template...  50000
-  0%|          | 0/50000 [00:00<?, ?it/s]  2%|▏         | 914/50000 [00:00<00:05, 9133.37it/s]  4%|▎         | 1828/50000 [00:00<00:05, 9132.34it/s]  5%|▌         | 2743/50000 [00:00<00:05, 9139.15it/s]  7%|▋         | 3657/50000 [00:00<00:05, 9135.48it/s]  9%|▉         | 4571/50000 [00:00<00:04, 9130.10it/s] 11%|█         | 5485/50000 [00:00<00:04, 9133.39it/s] 13%|█▎        | 6399/50000 [00:00<00:04, 9127.14it/s] 15%|█▍        | 7317/50000 [00:00<00:04, 9143.75it/s] 16%|█▋        | 8236/50000 [00:00<00:04, 9156.63it/s] 18%|█▊        | 9156/50000 [00:01<00:04, 9168.69it/s] 20%|██        | 10074/50000 [00:01<00:04, 9171.43it/s] 22%|██▏       | 10996/50000 [00:01<00:04, 9185.72it/s] 24%|██▍       | 11915/50000 [00:01<00:04, 9169.38it/s] 26%|██▌       | 12832/50000 [00:01<00:04, 9150.26it/s] 27%|██▋       | 13748/50000 [00:01<00:03, 9136.83it/s] 29%|██▉       | 14662/50000 [00:01<00:03, 9137.60it/s] 31%|███       | 15584/50000 [00:01<00:03, 9159.40it/s] 33%|███▎      | 16500/50000 [00:01<00:03, 9158.26it/s] 35%|███▍      | 17416/50000 [00:01<00:03, 9156.31it/s] 37%|███▋      | 18334/50000 [00:02<00:03, 9161.24it/s] 39%|███▊      | 19251/50000 [00:02<00:03, 9151.96it/s] 40%|████      | 20169/50000 [00:02<00:03, 9157.37it/s] 42%|████▏     | 21085/50000 [00:02<00:03, 9153.08it/s] 44%|████▍     | 22002/50000 [00:02<00:03, 9157.22it/s] 46%|████▌     | 22921/50000 [00:02<00:02, 9166.11it/s] 48%|████▊     | 23838/50000 [00:02<00:02, 9157.44it/s] 50%|████▉     | 24754/50000 [00:02<00:02, 9140.42it/s] 51%|█████▏    | 25669/50000 [00:02<00:02, 9118.44it/s] 53%|█████▎    | 26581/50000 [00:02<00:02, 9107.28it/s] 55%|█████▍    | 27492/50000 [00:03<00:02, 9102.80it/s] 57%|█████▋    | 28406/50000 [00:03<00:02, 9111.04it/s] 59%|█████▊    | 29324/50000 [00:03<00:02, 9129.67it/s] 60%|██████    | 30238/50000 [00:03<00:02, 9130.86it/s] 62%|██████▏   | 31153/50000 [00:03<00:02, 9135.71it/s] 64%|██████▍   | 32069/50000 [00:03<00:01, 9142.30it/s] 66%|██████▌   | 32984/50000 [00:03<00:01, 9131.51it/s] 68%|██████▊   | 33898/50000 [00:03<00:01, 9122.30it/s] 70%|██████▉   | 34811/50000 [00:03<00:01, 9119.66it/s] 71%|███████▏  | 35731/50000 [00:03<00:01, 9140.89it/s] 73%|███████▎  | 36646/50000 [00:04<00:01, 9140.38it/s] 75%|███████▌  | 37561/50000 [00:04<00:01, 9141.49it/s] 77%|███████▋  | 38477/50000 [00:04<00:01, 9145.34it/s] 79%|███████▉  | 39394/50000 [00:04<00:01, 9150.34it/s] 81%|████████  | 40310/50000 [00:04<00:01, 9135.14it/s] 82%|████████▏ | 41227/50000 [00:04<00:00, 9143.02it/s] 84%|████████▍ | 42142/50000 [00:04<00:00, 9144.83it/s] 86%|████████▌ | 43057/50000 [00:04<00:00, 9140.54it/s] 88%|████████▊ | 43972/50000 [00:04<00:00, 9141.89it/s] 90%|████████▉ | 44887/50000 [00:04<00:00, 9140.20it/s] 92%|█████████▏| 45802/50000 [00:05<00:00, 9142.76it/s] 93%|█████████▎| 46717/50000 [00:05<00:00, 9144.44it/s] 95%|█████████▌| 47634/50000 [00:05<00:00, 9151.13it/s] 97%|█████████▋| 48550/50000 [00:05<00:00, 9150.50it/s] 99%|█████████▉| 49466/50000 [00:05<00:00, 9134.86it/s]100%|██████████| 50000/50000 [00:05<00:00, 9141.49it/s]
-  math split: 40000 train, 10000 eval (no overlap, 20% eval)
-  math: 40000 train, 10000 eval in 9.1s
-  cyber split: 1590 train, 397 eval (no overlap, 20% eval)
-  cyber: 1590 train, 397 eval in 5.7s
-Eval sizes (dev): {'biology': 500, 'chemistry': 500, 'math': 500, 'cyber': 397}
-
-================================================================================
-Baseline LLM judge eval (recover/google--gemma-3-12b-it/layer_41--width_16k--canonical/math/h0.0001/k1816)
-================================================================================
-Getting token length estimate... w/ batch_size=1024
-Tokenizing batches for length estimate w/ batch_size=1024:   0%|          | 0/1 [00:00<?, ?it/s]Tokenizing batches for length estimate w/ batch_size=1024: 100%|██████████| 1/1 [00:00<00:00, 73.05it/s]
-DONE Getting token length estimate!
-Getting length-aware padding breakpoints...
-DONE Tokenizing...
-Tokenizing texts into BEs:   0%|          | 0/6 [00:00<?, ?it/s]Asking to truncate to max_length but no maximum length is provided and the model has no predefined maximum length. Default to no truncation.
-Tokenizing texts into BEs: 100%|██████████| 6/6 [00:00<00:00, 588.77it/s]
-Generating responses...:   0%|          | 0/6 [00:00<?, ?it/s]Generating responses...:  17%|█▋        | 1/6 [00:59<04:57, 59.50s/it]Generating responses...:  33%|███▎      | 2/6 [01:53<03:44, 56.15s/it]Generating responses...:  50%|█████     | 3/6 [02:46<02:44, 54.85s/it]Generating responses...:  67%|██████▋   | 4/6 [03:39<01:48, 54.18s/it]Generating responses...:  83%|████████▎ | 5/6 [04:31<00:53, 53.39s/it]Generating responses...: 100%|██████████| 6/6 [05:23<00:00, 52.94s/it]Generating responses...: 100%|██████████| 6/6 [05:23<00:00, 53.97s/it]
-Running LLM judges...:   0%|          | 0/120 [00:00<?, ?it/s]
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
-
-
-[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
-LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.Running LLM judges...:   0%|          | 0/120 [00:02<?, ?it/s]
-
-
-Traceback (most recent call last):
-  File "/data/aruna_sankaranarayanan/SAEScoping/experiments/script_scoping_pipeline_stemqa.py", line 855, in <module>
-    main()
-  File "/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/click/core.py", line 1442, in __call__
-    return self.main(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/click/core.py", line 1363, in main
-    rv = self.invoke(ctx)
-         ^^^^^^^^^^^^^^^^
-  File "/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/click/core.py", line 1226, in invoke
-    return ctx.invoke(self.callback, **ctx.params)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/click/core.py", line 794, in invoke
-    return callback(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/data/aruna_sankaranarayanan/SAEScoping/experiments/script_scoping_pipeline_stemqa.py", line 670, in main
-    run_baseline_eval(
-  File "/data/aruna_sankaranarayanan/SAEScoping/experiments/script_scoping_pipeline_stemqa.py", line 397, in run_baseline_eval
-    scores, df_as_json = evaluator.evaluate(
-                         ^^^^^^^^^^^^^^^^^^^
-  File "<@beartype(sae_scoping.xxx_evaluation.scoping_eval.OneClickLLMJudgeScopingEval.evaluate) at 0x7f1228fe1e40>", line 50, in evaluate
-  File "/data/aruna_sankaranarayanan/SAEScoping/sae_scoping/xxx_evaluation/scoping_eval.py", line 428, in evaluate
-    df = self._run_llm_judges(all_prompts, prompt2seed, prompt2response)
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<@beartype(sae_scoping.xxx_evaluation.scoping_eval.OneClickLLMJudgeScopingEval._run_llm_judges) at 0x7f1228fe1b20>", line 92, in _run_llm_judges
-  File "/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/pandera/decorators.py", line 967, in _wrapper
-    out = wrapped(*validated_pos, **validated_kwd)
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/data/aruna_sankaranarayanan/SAEScoping/sae_scoping/xxx_evaluation/scoping_eval.py", line 237, in _run_llm_judges
-    for (_, judge_name), judgement in tqdm.tqdm(
-                                      ^^^^^^^^^^
-  File "/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/tqdm/std.py", line 1181, in __iter__
-    for obj in iterable:
-               ^^^^^^^^
-  File "/data/aruna_sankaranarayanan/SAEScoping/sae_scoping/utils/xxx_generation/api_generator.py", line 159, in api_generate_json_mode_streaming
-    for generation in generations_iterator:
-                      ^^^^^^^^^^^^^^^^^^^^
-  File "/data/aruna_sankaranarayanan/SAEScoping/sae_scoping/utils/xxx_generation/api_generator.py", line 110, in api_generate_streaming
-    yield from [r.choices[0].message.content for r in resps]
-                ^^^^^^^^^
-AttributeError: 'AuthenticationError' object has no attribute 'choices'

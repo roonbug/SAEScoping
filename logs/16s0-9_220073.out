@@ -1,35 +1,0 @@
-[1muser: [0m arunasank
-[1morgs: [0m MIT,mib-bench
-/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/transformers/utils/hub.py:111: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
-  warnings.warn(
-/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/pydantic/_internal/_generate_schema.py:2249: UnsupportedFieldAttributeWarning: The 'repr' attribute with value False was provided to the `Field()` function, which has no effect in the context it was used. 'repr' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
-  warnings.warn(
-/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/pydantic/_internal/_generate_schema.py:2249: UnsupportedFieldAttributeWarning: The 'frozen' attribute with value True was provided to the `Field()` function, which has no effect in the context it was used. 'frozen' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
-  warnings.warn(
-`torch_dtype` is deprecated! Use `dtype` instead!
-
-=== Compute: google/gemma-3-12b-it ===
-Loading datasets ...
-Loading model google/gemma-3-12b-it ...
-Fetching 5 files:   0%|          | 0/5 [00:00<?, ?it/s]Fetching 5 files:  20%|██        | 1/5 [00:39<02:38, 39.55s/it]Fetching 5 files:  40%|████      | 2/5 [00:40<00:49, 16.59s/it]Fetching 5 files: 100%|██████████| 5/5 [00:40<00:00,  8.01s/it]
-Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|██        | 1/5 [00:00<00:03,  1.00it/s]Loading checkpoint shards:  40%|████      | 2/5 [00:02<00:03,  1.06s/it]Loading checkpoint shards:  60%|██████    | 3/5 [00:03<00:02,  1.09s/it]Loading checkpoint shards:  80%|████████  | 4/5 [00:04<00:01,  1.13s/it]Loading checkpoint shards: 100%|██████████| 5/5 [00:05<00:00,  1.12s/it]Loading checkpoint shards: 100%|██████████| 5/5 [00:05<00:00,  1.11s/it]
-  Layer   0: computing ['biology', 'chemistry', 'math', 'physics'] ...
-    SAE load failed for layer 0: ID layer_0_width_16k_l0_medium not found in release gemma-scope-2-12b-it-res-all. Valid IDs are ['layer_0_width_16k_l0_big', 'layer_0_width_16k_l0_small', 'layer_0_width_262k_l0_big', 'layer_0_width_262k_l0_small', 'layer_10_width_16k_l0_big', ...]. — skipping
-  Layer   1: computing ['biology', 'chemistry', 'math', 'physics'] ...
-    SAE load failed for layer 1: ID layer_1_width_16k_l0_medium not found in release gemma-scope-2-12b-it-res-all. Valid IDs are ['layer_0_width_16k_l0_big', 'layer_0_width_16k_l0_small', 'layer_0_width_262k_l0_big', 'layer_0_width_262k_l0_small', 'layer_10_width_16k_l0_big', ...]. — skipping
-  Layer   2: computing ['biology', 'chemistry', 'math', 'physics'] ...
-    SAE load failed for layer 2: ID layer_2_width_16k_l0_medium not found in release gemma-scope-2-12b-it-res-all. Valid IDs are ['layer_0_width_16k_l0_big', 'layer_0_width_16k_l0_small', 'layer_0_width_262k_l0_big', 'layer_0_width_262k_l0_small', 'layer_10_width_16k_l0_big', ...]. — skipping
-  Layer   3: computing ['biology', 'chemistry', 'math', 'physics'] ...
-    SAE load failed for layer 3: ID layer_3_width_16k_l0_medium not found in release gemma-scope-2-12b-it-res-all. Valid IDs are ['layer_0_width_16k_l0_big', 'layer_0_width_16k_l0_small', 'layer_0_width_262k_l0_big', 'layer_0_width_262k_l0_small', 'layer_10_width_16k_l0_big', ...]. — skipping
-  Layer   4: computing ['biology', 'chemistry', 'math', 'physics'] ...
-    SAE load failed for layer 4: ID layer_4_width_16k_l0_medium not found in release gemma-scope-2-12b-it-res-all. Valid IDs are ['layer_0_width_16k_l0_big', 'layer_0_width_16k_l0_small', 'layer_0_width_262k_l0_big', 'layer_0_width_262k_l0_small', 'layer_10_width_16k_l0_big', ...]. — skipping
-  Layer   5: computing ['biology', 'chemistry', 'math', 'physics'] ...
-    SAE load failed for layer 5: ID layer_5_width_16k_l0_medium not found in release gemma-scope-2-12b-it-res-all. Valid IDs are ['layer_0_width_16k_l0_big', 'layer_0_width_16k_l0_small', 'layer_0_width_262k_l0_big', 'layer_0_width_262k_l0_small', 'layer_10_width_16k_l0_big', ...]. — skipping
-  Layer   6: computing ['biology', 'chemistry', 'math', 'physics'] ...
-    SAE load failed for layer 6: ID layer_6_width_16k_l0_medium not found in release gemma-scope-2-12b-it-res-all. Valid IDs are ['layer_0_width_16k_l0_big', 'layer_0_width_16k_l0_small', 'layer_0_width_262k_l0_big', 'layer_0_width_262k_l0_small', 'layer_10_width_16k_l0_big', ...]. — skipping
-  Layer   7: computing ['biology', 'chemistry', 'math', 'physics'] ...
-    SAE load failed for layer 7: ID layer_7_width_16k_l0_medium not found in release gemma-scope-2-12b-it-res-all. Valid IDs are ['layer_0_width_16k_l0_big', 'layer_0_width_16k_l0_small', 'layer_0_width_262k_l0_big', 'layer_0_width_262k_l0_small', 'layer_10_width_16k_l0_big', ...]. — skipping
-  Layer   8: computing ['biology', 'chemistry', 'math', 'physics'] ...
-    SAE load failed for layer 8: ID layer_8_width_16k_l0_medium not found in release gemma-scope-2-12b-it-res-all. Valid IDs are ['layer_0_width_16k_l0_big', 'layer_0_width_16k_l0_small', 'layer_0_width_262k_l0_big', 'layer_0_width_262k_l0_small', 'layer_10_width_16k_l0_big', ...]. — skipping
-  Layer   9: computing ['biology', 'chemistry', 'math', 'physics'] ...
-    SAE load failed for layer 9: ID layer_9_width_16k_l0_medium not found in release gemma-scope-2-12b-it-res-all. Valid IDs are ['layer_0_width_16k_l0_big', 'layer_0_width_16k_l0_small', 'layer_0_width_262k_l0_big', 'layer_0_width_262k_l0_small', 'layer_10_width_16k_l0_big', ...]. — skipping

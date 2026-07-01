@@ -1,0 +1,18 @@
+[
+  {
+    "label": "L31 width_16k",
+    "domain_a": "physics",
+    "domain_b": "chemistry",
+    "sae_width": 16384,
+    "n_physics_active": 2042,
+    "n_chemistry_active": 2132,
+    "n_overlap": 1781,
+    "overlap_pct_of_physics": 87.21841332027425,
+    "overlap_pct_of_chemistry": 83.53658536585365,
+    "mean_chemistry_physics_ratio": 1.029665231704712,
+    "median_chemistry_physics_ratio": 0.9640666246414185,
+    "pct_chemistry_dominant": 42.167321729365526,
+    "mean_physics_rate": 0.00032321654725819826,
+    "mean_chemistry_rate": 0.00029930120217613876
+  }
+]

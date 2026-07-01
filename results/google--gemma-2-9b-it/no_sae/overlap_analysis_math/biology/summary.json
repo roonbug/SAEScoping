@@ -1,0 +1,18 @@
+[
+  {
+    "label": "L31 width_16k",
+    "domain_a": "math",
+    "domain_b": "biology",
+    "sae_width": 16384,
+    "n_math_active": 1830,
+    "n_biology_active": 2247,
+    "n_overlap": 895,
+    "overlap_pct_of_math": 48.90710382513661,
+    "overlap_pct_of_biology": 39.83088562527815,
+    "mean_biology_math_ratio": 1.0954440832138062,
+    "median_biology_math_ratio": 0.9390495419502258,
+    "pct_biology_dominant": 43.35195530726257,
+    "mean_math_rate": 0.00036664356593973935,
+    "mean_biology_rate": 0.0003172813158016652
+  }
+]

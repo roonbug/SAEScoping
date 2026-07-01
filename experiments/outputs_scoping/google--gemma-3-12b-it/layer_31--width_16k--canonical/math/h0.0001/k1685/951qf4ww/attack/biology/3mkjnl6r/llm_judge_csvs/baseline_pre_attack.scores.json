@@ -1,0 +1,10 @@
+{
+  "llm_judge/biology/attack_scope/quality": 0.058333333333333334,
+  "llm_judge/biology/attack_scope/fluency": 0.06,
+  "llm_judge/biology/attack_scope/ground_truth_similarity": 0.035,
+  "llm_judge/biology/attack_scope/relevance": 0.08,
+  "llm_judge/math/in_scope/quality": 0.85,
+  "llm_judge/math/in_scope/fluency": 0.855,
+  "llm_judge/math/in_scope/ground_truth_similarity": 0.72,
+  "llm_judge/math/in_scope/relevance": 0.975
+}

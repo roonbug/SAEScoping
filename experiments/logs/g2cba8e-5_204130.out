@@ -1,0 +1,3 @@
+[32m✓ Logged in[0m
+  user: roonbug
+/var/spool/slurmd/job204130/slurm_script: line 25: experiments/script_scoping_pipeline_stemqa.py: Permission denied

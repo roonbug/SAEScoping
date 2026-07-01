@@ -1,0 +1,34 @@
+[
+  {
+    "label": "L31 width_16k",
+    "domain_a": "chemistry",
+    "domain_b": "math",
+    "sae_width": 16384,
+    "n_chemistry_active": 2132,
+    "n_math_active": 1830,
+    "n_overlap": 1379,
+    "overlap_pct_of_chemistry": 64.6810506566604,
+    "overlap_pct_of_math": 75.3551912568306,
+    "mean_math_chemistry_ratio": 1.3265855312347412,
+    "median_math_chemistry_ratio": 1.1372733116149902,
+    "pct_math_dominant": 62.871646120377086,
+    "mean_chemistry_rate": 0.0003105102223344147,
+    "mean_math_rate": 0.0003787997120525688
+  },
+  {
+    "label": "L31 width_16k",
+    "domain_a": "chemistry",
+    "domain_b": "math",
+    "sae_width": 16384,
+    "n_chemistry_active": 2132,
+    "n_math_active": 1830,
+    "n_overlap": 1379,
+    "overlap_pct_of_chemistry": 64.6810506566604,
+    "overlap_pct_of_math": 75.3551912568306,
+    "mean_math_chemistry_ratio": 1.3265855312347412,
+    "median_math_chemistry_ratio": 1.1372733116149902,
+    "pct_math_dominant": 62.871646120377086,
+    "mean_chemistry_rate": 0.0003105102223344147,
+    "mean_math_rate": 0.0003787997120525688
+  }
+]

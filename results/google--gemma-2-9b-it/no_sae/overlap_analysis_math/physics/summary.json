@@ -1,0 +1,18 @@
+[
+  {
+    "label": "L31 width_16k",
+    "domain_a": "math",
+    "domain_b": "physics",
+    "sae_width": 16384,
+    "n_math_active": 1830,
+    "n_physics_active": 2042,
+    "n_overlap": 1466,
+    "overlap_pct_of_math": 80.10928961748634,
+    "overlap_pct_of_physics": 71.79236043095005,
+    "mean_physics_math_ratio": 1.04310941696167,
+    "median_physics_math_ratio": 0.9434913992881775,
+    "pct_physics_dominant": 41.541609822646656,
+    "mean_math_rate": 0.00036994655965827405,
+    "mean_physics_rate": 0.0003421590954530984
+  }
+]

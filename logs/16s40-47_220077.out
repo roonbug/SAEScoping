@@ -1,0 +1,30 @@
+[1muser: [0m arunasank
+[1morgs: [0m MIT,mib-bench
+/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/transformers/utils/hub.py:111: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/pydantic/_internal/_generate_schema.py:2249: UnsupportedFieldAttributeWarning: The 'repr' attribute with value False was provided to the `Field()` function, which has no effect in the context it was used. 'repr' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
+  warnings.warn(
+/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/pydantic/_internal/_generate_schema.py:2249: UnsupportedFieldAttributeWarning: The 'frozen' attribute with value True was provided to the `Field()` function, which has no effect in the context it was used. 'frozen' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
+  warnings.warn(
+`torch_dtype` is deprecated! Use `dtype` instead!
+
+=== Compute: google/gemma-3-12b-it ===
+Loading datasets ...
+Loading model google/gemma-3-12b-it ...
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|██        | 1/5 [00:00<00:00,  7.79it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:00<00:00, 22.38it/s]
+  Layer  40: computing ['biology', 'chemistry', 'math', 'physics'] ...
+    SAE load failed for layer 40: ID layer_40_width_16k_l0_medium not found in release gemma-scope-2-12b-it-res-all. Valid IDs are ['layer_0_width_16k_l0_big', 'layer_0_width_16k_l0_small', 'layer_0_width_262k_l0_big', 'layer_0_width_262k_l0_small', 'layer_10_width_16k_l0_big', ...]. — skipping
+  Layer  41: computing ['biology', 'chemistry', 'math', 'physics'] ...
+    SAE load failed for layer 41: ID layer_41_width_16k_l0_medium not found in release gemma-scope-2-12b-it-res-all. Valid IDs are ['layer_0_width_16k_l0_big', 'layer_0_width_16k_l0_small', 'layer_0_width_262k_l0_big', 'layer_0_width_262k_l0_small', 'layer_10_width_16k_l0_big', ...]. — skipping
+  Layer  42: computing ['biology', 'chemistry', 'math', 'physics'] ...
+    SAE load failed for layer 42: ID layer_42_width_16k_l0_medium not found in release gemma-scope-2-12b-it-res-all. Valid IDs are ['layer_0_width_16k_l0_big', 'layer_0_width_16k_l0_small', 'layer_0_width_262k_l0_big', 'layer_0_width_262k_l0_small', 'layer_10_width_16k_l0_big', ...]. — skipping
+  Layer  43: computing ['biology', 'chemistry', 'math', 'physics'] ...
+    SAE load failed for layer 43: ID layer_43_width_16k_l0_medium not found in release gemma-scope-2-12b-it-res-all. Valid IDs are ['layer_0_width_16k_l0_big', 'layer_0_width_16k_l0_small', 'layer_0_width_262k_l0_big', 'layer_0_width_262k_l0_small', 'layer_10_width_16k_l0_big', ...]. — skipping
+  Layer  44: computing ['biology', 'chemistry', 'math', 'physics'] ...
+    SAE load failed for layer 44: ID layer_44_width_16k_l0_medium not found in release gemma-scope-2-12b-it-res-all. Valid IDs are ['layer_0_width_16k_l0_big', 'layer_0_width_16k_l0_small', 'layer_0_width_262k_l0_big', 'layer_0_width_262k_l0_small', 'layer_10_width_16k_l0_big', ...]. — skipping
+  Layer  45: computing ['biology', 'chemistry', 'math', 'physics'] ...
+    SAE load failed for layer 45: ID layer_45_width_16k_l0_medium not found in release gemma-scope-2-12b-it-res-all. Valid IDs are ['layer_0_width_16k_l0_big', 'layer_0_width_16k_l0_small', 'layer_0_width_262k_l0_big', 'layer_0_width_262k_l0_small', 'layer_10_width_16k_l0_big', ...]. — skipping
+  Layer  46: computing ['biology', 'chemistry', 'math', 'physics'] ...
+    SAE load failed for layer 46: ID layer_46_width_16k_l0_medium not found in release gemma-scope-2-12b-it-res-all. Valid IDs are ['layer_0_width_16k_l0_big', 'layer_0_width_16k_l0_small', 'layer_0_width_262k_l0_big', 'layer_0_width_262k_l0_small', 'layer_10_width_16k_l0_big', ...]. — skipping
+  Layer  47: computing ['biology', 'chemistry', 'math', 'physics'] ...
+    SAE load failed for layer 47: ID layer_47_width_16k_l0_medium not found in release gemma-scope-2-12b-it-res-all. Valid IDs are ['layer_0_width_16k_l0_big', 'layer_0_width_16k_l0_small', 'layer_0_width_262k_l0_big', 'layer_0_width_262k_l0_small', 'layer_10_width_16k_l0_big', ...]. — skipping

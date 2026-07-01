@@ -1,0 +1,154 @@
+/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/pydantic/_internal/_generate_schema.py:2249: UnsupportedFieldAttributeWarning: The 'repr' attribute with value False was provided to the `Field()` function, which has no effect in the context it was used. 'repr' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
+  warnings.warn(
+/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/pydantic/_internal/_generate_schema.py:2249: UnsupportedFieldAttributeWarning: The 'frozen' attribute with value True was provided to the `Field()` function, which has no effect in the context it was used. 'frozen' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
+  warnings.warn(
+/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/transformers/utils/hub.py:111: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/beartype/_util/hint/pep/utilpeptest.py:339: BeartypeDecorHintPep585DeprecationWarning: PEP 484 type hint typing.Iterator[str] deprecated by PEP 585. This hint is scheduled for removal in the first Python version released after October 5th, 2025. To resolve this, import this hint from "beartype.typing" rather than "typing". For further commentary and alternatives, see also:
+    https://beartype.readthedocs.io/en/latest/api_roar/#pep-585-deprecations
+  warn(
+/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/beartype/_util/hint/pep/utilpeptest.py:339: BeartypeDecorHintPep585DeprecationWarning: PEP 484 type hint typing.Callable[[pandas.core.frame.DataFrame], float] deprecated by PEP 585. This hint is scheduled for removal in the first Python version released after October 5th, 2025. To resolve this, import this hint from "beartype.typing" rather than "typing". For further commentary and alternatives, see also:
+    https://beartype.readthedocs.io/en/latest/api_roar/#pep-585-deprecations
+  warn(
+Loading tokenizer from google/gemma-3-12b-it...
+Downloading checkpoint-2000 from HuggingFace recover repo arunasank/fitoo774...
+Fetching 19 files:   0%|          | 0/19 [00:00<?, ?it/s]Fetching 19 files: 100%|██████████| 19/19 [00:00<00:00, 235078.99it/s]
+`torch_dtype` is deprecated! Use `dtype` instead!
+Starting attack from recover checkpoint-2000 (local: /data/aruna_sankaranarayanan/models--arunasank--fitoo774/snapshots/fadf3c3034b2218f784375223d93790921fec9ff/checkpoint-2000)
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|██        | 1/5 [00:00<00:02,  1.56it/s]Loading checkpoint shards:  40%|████      | 2/5 [00:01<00:01,  1.75it/s]Loading checkpoint shards:  60%|██████    | 3/5 [00:01<00:01,  1.65it/s]Loading checkpoint shards:  80%|████████  | 4/5 [00:02<00:00,  1.63it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:03<00:00,  1.60it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:03<00:00,  1.62it/s]
+Loading all domain datasets...
+Streaming 4gate/StemQAMixture (biology) for 50000 samples... with streaming=False
+Processing stream and applying chat template...  50000
+  0%|          | 0/50000 [00:00<?, ?it/s]  2%|▏         | 813/50000 [00:00<00:06, 8128.19it/s]  3%|▎         | 1719/50000 [00:00<00:05, 8671.45it/s]  5%|▌         | 2625/50000 [00:00<00:05, 8847.16it/s]  7%|▋         | 3531/50000 [00:00<00:05, 8927.53it/s]  9%|▉         | 4430/50000 [00:00<00:05, 8946.57it/s] 11%|█         | 5326/50000 [00:00<00:04, 8948.47it/s] 12%|█▏        | 6241/50000 [00:00<00:04, 9014.09it/s] 14%|█▍        | 7151/50000 [00:00<00:04, 9038.65it/s] 16%|█▌        | 8065/50000 [00:00<00:04, 9067.76it/s] 18%|█▊        | 8977/50000 [00:01<00:04, 9082.89it/s] 20%|█▉        | 9887/50000 [00:01<00:04, 9087.77it/s] 22%|██▏       | 10801/50000 [00:01<00:04, 9102.60it/s] 23%|██▎       | 11717/50000 [00:01<00:04, 9117.20it/s] 25%|██▌       | 12637/50000 [00:01<00:04, 9141.97it/s] 27%|██▋       | 13552/50000 [00:01<00:03, 9134.11it/s] 29%|██▉       | 14467/50000 [00:01<00:03, 9138.62it/s] 31%|███       | 15382/50000 [00:01<00:03, 9140.01it/s] 33%|███▎      | 16297/50000 [00:01<00:03, 9133.61it/s] 34%|███▍      | 17211/50000 [00:01<00:03, 9134.13it/s] 36%|███▋      | 18125/50000 [00:02<00:03, 9127.52it/s] 38%|███▊      | 19038/50000 [00:02<00:03, 9126.02it/s] 40%|███▉      | 19951/50000 [00:02<00:03, 9120.79it/s] 42%|████▏     | 20864/50000 [00:02<00:03, 9116.95it/s] 44%|████▎     | 21776/50000 [00:02<00:03, 9108.15it/s] 45%|████▌     | 22687/50000 [00:02<00:03, 9098.79it/s] 47%|████▋     | 23597/50000 [00:02<00:02, 9082.29it/s] 49%|████▉     | 24506/50000 [00:02<00:02, 9081.16it/s] 51%|█████     | 25419/50000 [00:02<00:02, 9093.83it/s] 53%|█████▎    | 26329/50000 [00:02<00:02, 9095.20it/s] 54%|█████▍    | 27239/50000 [00:03<00:02, 9080.15it/s] 56%|█████▋    | 28150/50000 [00:03<00:02, 9087.60it/s] 58%|█████▊    | 29060/50000 [00:03<00:02, 9090.60it/s] 60%|█████▉    | 29973/50000 [00:03<00:02, 9100.38it/s] 62%|██████▏   | 30886/50000 [00:03<00:02, 9107.87it/s] 64%|██████▎   | 31800/50000 [00:03<00:01, 9116.23it/s] 65%|██████▌   | 32712/50000 [00:03<00:01, 9112.45it/s] 67%|██████▋   | 33624/50000 [00:03<00:01, 9109.77it/s] 69%|██████▉   | 34536/50000 [00:03<00:01, 9110.96it/s] 71%|███████   | 35451/50000 [00:03<00:01, 9121.40it/s] 73%|███████▎  | 36365/50000 [00:04<00:01, 9126.60it/s] 75%|███████▍  | 37278/50000 [00:04<00:01, 9120.56it/s] 76%|███████▋  | 38191/50000 [00:04<00:01, 9122.03it/s] 78%|███████▊  | 39104/50000 [00:04<00:01, 9094.88it/s] 80%|████████  | 40014/50000 [00:04<00:01, 9087.33it/s] 82%|████████▏ | 40923/50000 [00:04<00:01, 9052.71it/s] 84%|████████▎ | 41829/50000 [00:04<00:00, 9027.78it/s] 85%|████████▌ | 42732/50000 [00:04<00:00, 9023.15it/s] 87%|████████▋ | 43637/50000 [00:04<00:00, 9028.32it/s] 89%|████████▉ | 44543/50000 [00:04<00:00, 9034.78it/s] 91%|█████████ | 45447/50000 [00:05<00:00, 9035.61it/s] 93%|█████████▎| 46358/50000 [00:05<00:00, 9056.16it/s] 95%|█████████▍| 47266/50000 [00:05<00:00, 9062.31it/s] 96%|█████████▋| 48181/50000 [00:05<00:00, 9086.71it/s] 98%|█████████▊| 49096/50000 [00:05<00:00, 9103.13it/s]100%|██████████| 50000/50000 [00:05<00:00, 9075.27it/s]
+  biology split: 40000 train, 10000 eval (no overlap, 20% eval)
+  biology: 40000 train, 10000 eval in 9.4s
+Streaming 4gate/StemQAMixture (chemistry) for 50000 samples... with streaming=False
+Processing stream and applying chat template...  50000
+  0%|          | 0/50000 [00:00<?, ?it/s]  2%|▏         | 904/50000 [00:00<00:05, 9032.75it/s]  4%|▎         | 1816/50000 [00:00<00:05, 9080.27it/s]  5%|▌         | 2728/50000 [00:00<00:05, 9096.83it/s]  7%|▋         | 3643/50000 [00:00<00:05, 9117.45it/s]  9%|▉         | 4557/50000 [00:00<00:04, 9123.01it/s] 11%|█         | 5470/50000 [00:00<00:04, 9102.01it/s] 13%|█▎        | 6383/50000 [00:00<00:04, 9108.51it/s] 15%|█▍        | 7294/50000 [00:00<00:04, 9107.52it/s] 16%|█▋        | 8205/50000 [00:00<00:04, 9099.38it/s] 18%|█▊        | 9115/50000 [00:01<00:04, 9075.17it/s] 20%|██        | 10023/50000 [00:01<00:04, 9061.80it/s] 22%|██▏       | 10930/50000 [00:01<00:04, 9042.64it/s] 24%|██▎       | 11835/50000 [00:01<00:04, 9027.00it/s] 25%|██▌       | 12738/50000 [00:01<00:04, 9003.66it/s] 27%|██▋       | 13639/50000 [00:01<00:04, 8955.20it/s] 29%|██▉       | 14535/50000 [00:01<00:03, 8955.25it/s] 31%|███       | 15438/50000 [00:01<00:03, 8976.22it/s] 33%|███▎      | 16341/50000 [00:01<00:03, 8990.12it/s] 34%|███▍      | 17245/50000 [00:01<00:03, 9003.86it/s] 36%|███▋      | 18147/50000 [00:02<00:03, 9006.39it/s] 38%|███▊      | 19053/50000 [00:02<00:03, 9020.51it/s] 40%|███▉      | 19961/50000 [00:02<00:03, 9038.30it/s] 42%|████▏     | 20865/50000 [00:02<00:03, 9034.83it/s] 44%|████▎     | 21772/50000 [00:02<00:03, 9045.10it/s] 45%|████▌     | 22679/50000 [00:02<00:03, 9049.77it/s] 47%|████▋     | 23584/50000 [00:02<00:02, 9048.78it/s] 49%|████▉     | 24489/50000 [00:02<00:02, 9037.91it/s] 51%|█████     | 25395/50000 [00:02<00:02, 9043.44it/s] 53%|█████▎    | 26303/50000 [00:02<00:02, 9054.33it/s] 54%|█████▍    | 27209/50000 [00:03<00:02, 9055.15it/s] 56%|█████▌    | 28115/50000 [00:03<00:02, 9047.60it/s] 58%|█████▊    | 29020/50000 [00:03<00:02, 9024.94it/s] 60%|█████▉    | 29923/50000 [00:03<00:02, 9016.14it/s] 62%|██████▏   | 30826/50000 [00:03<00:02, 9018.94it/s] 63%|██████▎   | 31729/50000 [00:03<00:02, 9020.66it/s] 65%|██████▌   | 32639/50000 [00:03<00:01, 9044.00it/s] 67%|██████▋   | 33544/50000 [00:03<00:01, 9026.75it/s] 69%|██████▉   | 34447/50000 [00:03<00:01, 9004.45it/s] 71%|███████   | 35348/50000 [00:03<00:01, 8987.26it/s] 72%|███████▏  | 36247/50000 [00:04<00:01, 8952.69it/s] 74%|███████▍  | 37143/50000 [00:04<00:01, 8929.82it/s] 76%|███████▌  | 38037/50000 [00:04<00:01, 8904.44it/s] 78%|███████▊  | 38928/50000 [00:04<00:01, 8901.60it/s] 80%|███████▉  | 39822/50000 [00:04<00:01, 8912.87it/s] 81%|████████▏ | 40714/50000 [00:04<00:01, 8910.66it/s] 83%|████████▎ | 41611/50000 [00:04<00:00, 8927.59it/s] 85%|████████▌ | 42512/50000 [00:04<00:00, 8951.48it/s] 87%|████████▋ | 43408/50000 [00:04<00:00, 8932.20it/s] 89%|████████▊ | 44307/50000 [00:04<00:00, 8948.11it/s] 90%|████████▉ | 44932/50000 [00:04<00:00, 9009.60it/s]
+  chemistry split: 35946 train, 8986 eval (no overlap, 20% eval)
+  chemistry: 35946 train, 8986 eval in 7.8s
+Streaming 4gate/StemQAMixture (math) for 50000 samples... with streaming=False
+Processing stream and applying chat template...  50000
+  0%|          | 0/50000 [00:00<?, ?it/s]  2%|▏         | 918/50000 [00:00<00:05, 9177.19it/s]  4%|▎         | 1837/50000 [00:00<00:05, 9180.33it/s]  6%|▌         | 2756/50000 [00:00<00:05, 9164.65it/s]  7%|▋         | 3679/50000 [00:00<00:05, 9190.22it/s]  9%|▉         | 4602/50000 [00:00<00:04, 9203.87it/s] 11%|█         | 5523/50000 [00:00<00:04, 9204.19it/s] 13%|█▎        | 6451/50000 [00:00<00:04, 9228.23it/s] 15%|█▍        | 7378/50000 [00:00<00:04, 9238.60it/s] 17%|█▋        | 8302/50000 [00:00<00:04, 9204.18it/s] 18%|█▊        | 9227/50000 [00:01<00:04, 9215.75it/s] 20%|██        | 10152/50000 [00:01<00:04, 9223.48it/s] 22%|██▏       | 11075/50000 [00:01<00:04, 9205.97it/s] 24%|██▍       | 11996/50000 [00:01<00:04, 9152.49it/s] 26%|██▌       | 12912/50000 [00:01<00:04, 9127.74it/s] 28%|██▊       | 13833/50000 [00:01<00:03, 9149.90it/s] 30%|██▉       | 14756/50000 [00:01<00:03, 9171.12it/s] 31%|███▏      | 15676/50000 [00:01<00:03, 9177.35it/s] 33%|███▎      | 16594/50000 [00:01<00:03, 9153.14it/s] 35%|███▌      | 17510/50000 [00:01<00:03, 9131.25it/s] 37%|███▋      | 18424/50000 [00:02<00:03, 9121.58it/s] 39%|███▊      | 19339/50000 [00:02<00:03, 9129.49it/s] 41%|████      | 20263/50000 [00:02<00:03, 9160.45it/s] 42%|████▏     | 21184/50000 [00:02<00:03, 9174.14it/s] 44%|████▍     | 22109/50000 [00:02<00:03, 9196.51it/s] 46%|████▌     | 23034/50000 [00:02<00:02, 9210.61it/s] 48%|████▊     | 23956/50000 [00:02<00:02, 9211.76it/s] 50%|████▉     | 24881/50000 [00:02<00:02, 9221.28it/s] 52%|█████▏    | 25804/50000 [00:02<00:02, 9221.69it/s] 53%|█████▎    | 26727/50000 [00:02<00:02, 9214.86it/s] 55%|█████▌    | 27649/50000 [00:03<00:02, 9196.59it/s] 57%|█████▋    | 28569/50000 [00:03<00:02, 9185.20it/s] 59%|█████▉    | 29488/50000 [00:03<00:02, 9173.52it/s] 61%|██████    | 30408/50000 [00:03<00:02, 9179.82it/s] 63%|██████▎   | 31326/50000 [00:03<00:02, 9175.34it/s] 64%|██████▍   | 32244/50000 [00:03<00:01, 9170.26it/s] 66%|██████▋   | 33162/50000 [00:03<00:01, 9156.27it/s] 68%|██████▊   | 34079/50000 [00:03<00:01, 9159.81it/s] 70%|██████▉   | 34995/50000 [00:03<00:01, 9136.58it/s] 72%|███████▏  | 35909/50000 [00:03<00:01, 9134.39it/s] 74%|███████▎  | 36823/50000 [00:04<00:01, 9126.55it/s] 75%|███████▌  | 37736/50000 [00:04<00:01, 9110.36it/s] 77%|███████▋  | 38648/50000 [00:04<00:01, 9104.11it/s] 79%|███████▉  | 39562/50000 [00:04<00:01, 9112.24it/s] 81%|████████  | 40483/50000 [00:04<00:01, 9139.71it/s] 83%|████████▎ | 41397/50000 [00:04<00:00, 9133.01it/s] 85%|████████▍ | 42312/50000 [00:04<00:00, 9136.36it/s] 86%|████████▋ | 43226/50000 [00:04<00:00, 9117.58it/s] 88%|████████▊ | 44138/50000 [00:04<00:00, 9104.47it/s] 90%|█████████ | 45049/50000 [00:04<00:00, 9099.01it/s] 92%|█████████▏| 45965/50000 [00:05<00:00, 9117.00it/s] 94%|█████████▍| 46883/50000 [00:05<00:00, 9134.24it/s] 96%|█████████▌| 47797/50000 [00:05<00:00, 9111.26it/s] 97%|█████████▋| 48709/50000 [00:05<00:00, 9106.05it/s] 99%|█████████▉| 49620/50000 [00:05<00:00, 9099.97it/s]100%|██████████| 50000/50000 [00:05<00:00, 9157.27it/s]
+  math split: 40000 train, 10000 eval (no overlap, 20% eval)
+  math: 40000 train, 10000 eval in 8.0s
+Streaming 4gate/StemQAMixture (physics) for 50000 samples... with streaming=False
+Processing stream and applying chat template...  50000
+  0%|          | 0/50000 [00:00<?, ?it/s]  2%|▏         | 904/50000 [00:00<00:05, 9038.16it/s]  4%|▎         | 1808/50000 [00:00<00:05, 9034.24it/s]  5%|▌         | 2712/50000 [00:00<00:05, 9026.19it/s]  7%|▋         | 3615/50000 [00:00<00:05, 9024.80it/s]  9%|▉         | 4518/50000 [00:00<00:05, 9018.09it/s] 11%|█         | 5420/50000 [00:00<00:04, 9015.89it/s] 13%|█▎        | 6323/50000 [00:00<00:04, 9018.50it/s] 14%|█▍        | 7227/50000 [00:00<00:04, 9022.86it/s] 16%|█▋        | 8130/50000 [00:00<00:04, 9008.41it/s] 18%|█▊        | 9033/50000 [00:01<00:04, 9012.17it/s] 20%|█▉        | 9939/50000 [00:01<00:04, 9024.72it/s] 22%|██▏       | 10842/50000 [00:01<00:04, 9021.19it/s] 23%|██▎       | 11745/50000 [00:01<00:04, 8984.21it/s] 25%|██▌       | 12644/50000 [00:01<00:04, 8978.68it/s] 27%|██▋       | 13545/50000 [00:01<00:04, 8986.03it/s] 29%|██▉       | 14444/50000 [00:01<00:03, 8987.01it/s] 31%|███       | 15343/50000 [00:01<00:03, 8986.52it/s] 32%|███▏      | 16245/50000 [00:01<00:03, 8994.06it/s] 34%|███▍      | 17145/50000 [00:01<00:03, 8983.11it/s] 36%|███▌      | 18047/50000 [00:02<00:03, 8991.68it/s] 38%|███▊      | 18949/50000 [00:02<00:03, 8997.34it/s] 40%|███▉      | 19849/50000 [00:02<00:03, 8995.48it/s] 42%|████▏     | 20750/50000 [00:02<00:03, 8998.05it/s] 43%|████▎     | 21655/50000 [00:02<00:03, 9011.70it/s] 45%|████▌     | 22557/50000 [00:02<00:03, 8997.48it/s] 47%|████▋     | 23457/50000 [00:02<00:02, 8997.05it/s] 49%|████▊     | 24361/50000 [00:02<00:02, 9008.26it/s] 51%|█████     | 25266/50000 [00:02<00:02, 9020.36it/s] 52%|█████▏    | 26169/50000 [00:02<00:02, 9017.23it/s] 54%|█████▍    | 27071/50000 [00:03<00:02, 9006.70it/s] 56%|█████▌    | 27972/50000 [00:03<00:02, 8992.72it/s] 58%|█████▊    | 28872/50000 [00:03<00:02, 8994.41it/s] 60%|█████▉    | 29775/50000 [00:03<00:02, 9003.85it/s] 61%|██████▏   | 30676/50000 [00:03<00:02, 9002.49it/s] 63%|██████▎   | 31577/50000 [00:03<00:02, 8980.13it/s] 65%|██████▍   | 32476/50000 [00:03<00:01, 8969.81it/s] 67%|██████▋   | 33373/50000 [00:03<00:01, 8956.29it/s] 69%|██████▊   | 34269/50000 [00:03<00:01, 8944.91it/s] 70%|███████   | 35164/50000 [00:03<00:01, 8943.14it/s] 72%|███████▏  | 36059/50000 [00:04<00:01, 8929.74it/s] 74%|███████▍  | 36952/50000 [00:04<00:01, 8900.09it/s] 76%|███████▌  | 37844/50000 [00:04<00:01, 8905.86it/s] 77%|███████▋  | 38739/50000 [00:04<00:01, 8916.68it/s] 79%|███████▉  | 39631/50000 [00:04<00:01, 8899.04it/s] 81%|████████  | 40526/50000 [00:04<00:01, 8912.48it/s] 83%|████████▎ | 41418/50000 [00:04<00:00, 8908.10it/s] 85%|████████▍ | 42309/50000 [00:04<00:00, 8897.28it/s] 86%|████████▋ | 43202/50000 [00:04<00:00, 8906.67it/s] 88%|████████▊ | 44093/50000 [00:04<00:00, 8904.47it/s] 90%|████████▉ | 44984/50000 [00:05<00:00, 8900.79it/s] 92%|█████████▏| 45876/50000 [00:05<00:00, 8905.06it/s] 94%|█████████▎| 46772/50000 [00:05<00:00, 8918.88it/s] 95%|█████████▌| 47664/50000 [00:05<00:00, 8909.24it/s] 97%|█████████▋| 48558/50000 [00:05<00:00, 8916.52it/s] 99%|█████████▉| 49453/50000 [00:05<00:00, 8926.09it/s]100%|██████████| 50000/50000 [00:05<00:00, 8968.23it/s]
+wandb: Currently logged in as: arunasank to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: creating run
+wandb: Tracking run with wandb version 0.21.0
+wandb: Run data is saved locally in /data/aruna_sankaranarayanan/SAEScoping/wandb/run-20260502_172742-3cwk2wjy
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run recover/google--gemma-3-12b-it/layer_31--width_16k--canonical/math/h0.0001/k1685
+wandb: ⭐️ View project at https://wandb.ai/arunasank/sae-scoping-stemqa-math
+wandb: 🚀 View run at https://wandb.ai/arunasank/sae-scoping-stemqa-math/runs/3cwk2wjy
+wandb: uploading history steps 0-1, summary, console lines 0-0
+wandb:                                                                                
+wandb: 
+wandb: Run history:
+wandb:                     llm_judge/biology/out_of_scope/fluency_pre_scoping ▁
+wandb:     llm_judge/biology/out_of_scope/ground_truth_similarity_pre_scoping ▁
+wandb:                     llm_judge/biology/out_of_scope/quality_pre_scoping ▁
+wandb:                   llm_judge/biology/out_of_scope/relevance_pre_scoping ▁
+wandb:                   llm_judge/chemistry/out_of_scope/fluency_pre_scoping ▁
+wandb:   llm_judge/chemistry/out_of_scope/ground_truth_similarity_pre_scoping ▁
+wandb:                   llm_judge/chemistry/out_of_scope/quality_pre_scoping ▁
+wandb:                 llm_judge/chemistry/out_of_scope/relevance_pre_scoping ▁
+wandb:                            llm_judge/math/in_scope/fluency_pre_scoping ▁
+wandb:            llm_judge/math/in_scope/ground_truth_similarity_pre_scoping ▁
+wandb:                            llm_judge/math/in_scope/quality_pre_scoping ▁
+wandb:                          llm_judge/math/in_scope/relevance_pre_scoping ▁
+wandb:                     llm_judge/physics/out_of_scope/fluency_pre_scoping ▁
+wandb:     llm_judge/physics/out_of_scope/ground_truth_similarity_pre_scoping ▁
+wandb:                     llm_judge/physics/out_of_scope/quality_pre_scoping ▁
+wandb:                   llm_judge/physics/out_of_scope/relevance_pre_scoping ▁
+wandb:                                                    trainer/global_step ▁▁
+wandb:                   true_baseline/llm_judge/biology/out_of_scope/fluency ▁
+wandb:   true_baseline/llm_judge/biology/out_of_scope/ground_truth_similarity ▁
+wandb:                   true_baseline/llm_judge/biology/out_of_scope/quality ▁
+wandb:                 true_baseline/llm_judge/biology/out_of_scope/relevance ▁
+wandb:                 true_baseline/llm_judge/chemistry/out_of_scope/fluency ▁
+wandb: true_baseline/llm_judge/chemistry/out_of_scope/ground_truth_similarity ▁
+wandb:                 true_baseline/llm_judge/chemistry/out_of_scope/quality ▁
+wandb:               true_baseline/llm_judge/chemistry/out_of_scope/relevance ▁
+wandb:                          true_baseline/llm_judge/math/in_scope/fluency ▁
+wandb:          true_baseline/llm_judge/math/in_scope/ground_truth_similarity ▁
+wandb:                          true_baseline/llm_judge/math/in_scope/quality ▁
+wandb:                        true_baseline/llm_judge/math/in_scope/relevance ▁
+wandb:                   true_baseline/llm_judge/physics/out_of_scope/fluency ▁
+wandb:   true_baseline/llm_judge/physics/out_of_scope/ground_truth_similarity ▁
+wandb:                   true_baseline/llm_judge/physics/out_of_scope/quality ▁
+wandb:                 true_baseline/llm_judge/physics/out_of_scope/relevance ▁
+wandb: 
+wandb: Run summary:
+wandb:                     llm_judge/biology/out_of_scope/fluency_pre_scoping 1
+wandb:     llm_judge/biology/out_of_scope/ground_truth_similarity_pre_scoping 0.825
+wandb:                     llm_judge/biology/out_of_scope/quality_pre_scoping 0.94
+wandb:                   llm_judge/biology/out_of_scope/relevance_pre_scoping 0.995
+wandb:                   llm_judge/chemistry/out_of_scope/fluency_pre_scoping 0.995
+wandb:   llm_judge/chemistry/out_of_scope/ground_truth_similarity_pre_scoping 0.81
+wandb:                   llm_judge/chemistry/out_of_scope/quality_pre_scoping 0.935
+wandb:                 llm_judge/chemistry/out_of_scope/relevance_pre_scoping 1
+wandb:                            llm_judge/math/in_scope/fluency_pre_scoping 0.93
+wandb:            llm_judge/math/in_scope/ground_truth_similarity_pre_scoping 0.815
+wandb:                            llm_judge/math/in_scope/quality_pre_scoping 0.91167
+wandb:                          llm_judge/math/in_scope/relevance_pre_scoping 0.99
+wandb:                     llm_judge/physics/out_of_scope/fluency_pre_scoping 0.99
+wandb:     llm_judge/physics/out_of_scope/ground_truth_similarity_pre_scoping 0.705
+wandb:                     llm_judge/physics/out_of_scope/quality_pre_scoping 0.89667
+wandb:                   llm_judge/physics/out_of_scope/relevance_pre_scoping 0.995
+wandb:                                                    trainer/global_step 0
+wandb:                   true_baseline/llm_judge/biology/out_of_scope/fluency 1
+wandb:   true_baseline/llm_judge/biology/out_of_scope/ground_truth_similarity 0.825
+wandb:                   true_baseline/llm_judge/biology/out_of_scope/quality 0.94
+wandb:                 true_baseline/llm_judge/biology/out_of_scope/relevance 0.995
+wandb:                 true_baseline/llm_judge/chemistry/out_of_scope/fluency 0.995
+wandb: true_baseline/llm_judge/chemistry/out_of_scope/ground_truth_similarity 0.81
+wandb:                 true_baseline/llm_judge/chemistry/out_of_scope/quality 0.935
+wandb:               true_baseline/llm_judge/chemistry/out_of_scope/relevance 1
+wandb:                          true_baseline/llm_judge/math/in_scope/fluency 0.93
+wandb:          true_baseline/llm_judge/math/in_scope/ground_truth_similarity 0.815
+wandb:                          true_baseline/llm_judge/math/in_scope/quality 0.91167
+wandb:                        true_baseline/llm_judge/math/in_scope/relevance 0.99
+wandb:                   true_baseline/llm_judge/physics/out_of_scope/fluency 0.99
+wandb:   true_baseline/llm_judge/physics/out_of_scope/ground_truth_similarity 0.705
+wandb:                   true_baseline/llm_judge/physics/out_of_scope/quality 0.89667
+wandb:                 true_baseline/llm_judge/physics/out_of_scope/relevance 0.995
+wandb: 
+wandb: 🚀 View run recover/google--gemma-3-12b-it/layer_31--width_16k--canonical/math/h0.0001/k1685 at: https://wandb.ai/arunasank/sae-scoping-stemqa-math/runs/3cwk2wjy
+wandb: ⭐️ View project at: https://wandb.ai/arunasank/sae-scoping-stemqa-math
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20260502_172742-3cwk2wjy/logs
+wandb: creating run
+wandb: Tracking run with wandb version 0.21.0
+wandb: Run data is saved locally in /data/aruna_sankaranarayanan/SAEScoping/wandb/run-20260502_172750-9yujw8b4
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run attack/google--gemma-3-12b-it/layer_31--width_16k--canonical/math/h0.0001/k1685/physics
+wandb: ⭐️ View project at https://wandb.ai/arunasank/sae-scoping-stemqa-math
+wandb: 🚀 View run at https://wandb.ai/arunasank/sae-scoping-stemqa-math/runs/9yujw8b4
+  physics split: 40000 train, 10000 eval (no overlap, 20% eval)
+  physics: 40000 train, 10000 eval in 8.4s
+Eval sizes (dev): {'biology': 500, 'chemistry': 500, 'math': 500, 'physics': 500}
+Loading cached baseline eval from /data/aruna_sankaranarayanan/SAEScoping/experiments/outputs_scoping/google--gemma-3-12b-it/layer_31--width_16k--canonical/math/dev_llm_judge_csvs/baseline_true.csv
+Saved to /data/aruna_sankaranarayanan/SAEScoping/experiments/outputs_scoping/google--gemma-3-12b-it/layer_31--width_16k--canonical/math/dev_llm_judge_csvs/baseline_true.csv and /data/aruna_sankaranarayanan/SAEScoping/experiments/outputs_scoping/google--gemma-3-12b-it/layer_31--width_16k--canonical/math/dev_llm_judge_csvs/baseline_true.scores.json
+Pruning: keeping 1685/16384 neurons (threshold=0.0001)
+
+================================================================================
+STAGE 4: Adversarial elicitation (physics)
+================================================================================
+Attack dataset: 40000 train samples (physics)
+
+================================================================================
+Baseline LLM judge eval (attack/google--gemma-3-12b-it/layer_31--width_16k--canonical/math/h0.0001/k1685/physics)
+================================================================================
+  (running with pruned SAE hooked at model.language_model.layers.31)
+Getting token length estimate... w/ batch_size=1024
+Tokenizing batches for length estimate w/ batch_size=1024:   0%|          | 0/1 [00:00<?, ?it/s]Tokenizing batches for length estimate w/ batch_size=1024: 100%|██████████| 1/1 [00:00<00:00, 34.14it/s]
+DONE Getting token length estimate!
+Getting length-aware padding breakpoints...
+DONE Tokenizing...
+Tokenizing texts into BEs:   0%|          | 0/13 [00:00<?, ?it/s]Asking to truncate to max_length but no maximum length is provided and the model has no predefined maximum length. Default to no truncation.
+Tokenizing texts into BEs: 100%|██████████| 13/13 [00:00<00:00, 767.00it/s]
+Generating responses...:   0%|          | 0/13 [00:00<?, ?it/s]The following generation flags are not valid and may be ignored: ['top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Generating responses...:   8%|▊         | 1/13 [01:15<15:06, 75.55s/it]Generating responses...:  15%|█▌        | 2/13 [02:23<12:59, 70.82s/it]Generating responses...:  23%|██▎       | 3/13 [03:26<11:16, 67.66s/it]Generating responses...:  31%|███       | 4/13 [04:26<09:41, 64.58s/it]Generating responses...:  38%|███▊      | 5/13 [05:25<08:19, 62.41s/it]Generating responses...:  46%|████▌     | 6/13 [06:21<07:02, 60.42s/it]Generating responses...:  54%|█████▍    | 7/13 [07:17<05:53, 58.95s/it]Generating responses...:  62%|██████▏   | 8/13 [08:13<04:48, 57.76s/it]Generating responses...:  69%|██████▉   | 9/13 [09:08<03:48, 57.01s/it]Generating responses...:  77%|███████▋  | 10/13 [10:04<02:50, 56.69s/it]Generating responses...:  85%|████████▍ | 11/13 [11:01<01:53, 56.82s/it]Generating responses...:  92%|█████████▏| 12/13 [11:59<00:57, 57.14s/it]slurmstepd: error: *** JOB 213508 ON compute-264 CANCELLED AT 2026-05-02T17:40:24 ***

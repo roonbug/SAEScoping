@@ -56,18 +56,14 @@ Input: SAE firing-rate distributions for domain A and domain B.
    (the 1/rank weighting gives strong signal when the same feature is #1 in both domains).
 
   ---
-  Metric 3: Threshold-coverage AUC
+  Metric 3: Threshold-coverage
 
-  1. Sort features by A's firing rate (descending).
-  2. Sweep a threshold t linearly from 0 to max(A) using n_thresholds steps.
-  3. At each t, define A's active set: S(t) = {i : A[i] ≥ t}.
-     coverage(t) = Σ_{i ∈ S(t)} B[i]  (fraction of B's mass accounted for by A's active features)
-  4. Compute AUC of coverage(t) vs t, normalised by max(A) × 1.0 (the area of a flat curve at coverage=1).
+  At the fixed pruning threshold t used for domain A:
+    coverage = Σ_{i : A[i] ≥ t} B[i]
 
-  Interpretation: High value → A's above-threshold features carry most of B's activation mass even as the
-  threshold rises; the domains share features that are important in both, not just features active in A.
-  Unlike the top-k metrics the x-axis is a firing-rate threshold rather than feature count, making it
-  sensitive to features that are highly active in A but absent in B.
+  This is the fraction of B's total activation mass that falls on features passing A's pruning cut.
+  High value → B's activations concentrate on the same features A retains; low value → scoping
+  prunes features that B depends on.
 
   ---
   Regression:
@@ -143,26 +139,30 @@ PERF_DATA: list[tuple[str, str, int, str, str, float, float]] = [
     # physics-scoped OOD: all null → excluded
 
     # ── gemma-2-9b ───────────────────────────────────────────────────────────
-    ("biology",   "chemistry", 31, _SAE_BIO_9B,   "gemma-2-9b",  -16.5,  -7.0),
-    ("biology",   "physics",   31, _SAE_BIO_9B,   "gemma-2-9b",  -19.0,  -9.0),
-    ("biology",   "math",      31, _SAE_BIO_9B,   "gemma-2-9b",  -18.0, -10.0),
-    ("biology",   "code",      31, _SAE_BIO_9B,   "gemma-2-9b",     -4,  -4),
-    ("chemistry", "physics",   31, _SAE_CHEM_9B,  "gemma-2-9b",   -8.0,  -5.0),
-    ("chemistry", "math",      31, _SAE_CHEM_9B,  "gemma-2-9b",   -5.0,  -4.0),
-    ("chemistry", "biology",   31, _SAE_CHEM_9B,  "gemma-2-9b",  -17.0,  -9.3),
-    ("chemistry", "code",      31, _SAE_CHEM_9B,  "gemma-2-9b",   -6.5,    -6.5),
-    ("math",      "physics",   31, _SAE_MATH_9B,  "gemma-2-9b",  -13.0,  -9.0),
-    ("math",      "chemistry", 31, _SAE_MATH_9B,  "gemma-2-9b",  -23.0, -14.0),
-    ("math",      "biology",   31, _SAE_MATH_9B,  "gemma-2-9b",  -47.0, -34.0),
-    ("math",      "code",      31, _SAE_MATH_9B,  "gemma-2-9b",  -5.5, -5.5),
-    ("physics",   "chemistry", 31, _SAE_PHYS_9B,  "gemma-2-9b",   -7.5,  -4.3),
-    ("physics",   "math",      31, _SAE_PHYS_9B,  "gemma-2-9b",   -9.0,  -6.0),
-    ("physics",   "biology",   31, _SAE_PHYS_9B,  "gemma-2-9b",  -23.0, -13.0),
-    ("physics",      "code",   31, _SAE_PHYS_9B,  "gemma-2-9b",  -6.5,   -6.5),
-    ("code",      "chemistry", 31, _SAE_CODE_9B,  "gemma-2-9b",  -35.0, -34.0),
-    ("code",      "math",      31, _SAE_CODE_9B,  "gemma-2-9b",  -40.0, -35.0),
-    ("code",      "biology",   31, _SAE_CODE_9B,  "gemma-2-9b",  -57.0, -50.0),
-    ("code",      "physics",   31, _SAE_CODE_9B,  "gemma-2-9b",  -35.0, -42.0),
+    ("biology",   "chemistry", 31, _SAE_BIO_9B,   "gemma-2-9b",  -31.9, -13.32),
+    ("biology",   "physics",   31, _SAE_BIO_9B,   "gemma-2-9b",  -27.53,  -9.38),
+    ("biology",   "math",      31, _SAE_BIO_9B,   "gemma-2-9b",  -26.5, -10.37),
+    ("biology",   "code",      31, _SAE_BIO_9B,   "gemma-2-9b",     -98,  -98),
+
+    ("chemistry", "physics",   31, _SAE_CHEM_9B,  "gemma-2-9b",   -15.78,  -5.36),
+    ("chemistry", "math",      31, _SAE_CHEM_9B,  "gemma-2-9b",   -7.3,  -4.4),
+    ("chemistry", "biology",   31, _SAE_CHEM_9B,  "gemma-2-9b",  -22.29,  -8),
+    ("chemistry", "code",      31, _SAE_CHEM_9B,  "gemma-2-9b",   -96,    -96),
+    
+    ("math",      "physics",   31, _SAE_MATH_9B,  "gemma-2-9b",  -20.30,  -10.26),
+    ("math",      "chemistry", 31, _SAE_MATH_9B,  "gemma-2-9b",  -28.57, -14.31),
+    ("math",      "biology",   31, _SAE_MATH_9B,  "gemma-2-9b",  -58.38, -36.52),
+    ("math",      "code",      31, _SAE_MATH_9B,  "gemma-2-9b",  -94, -94),
+    
+    ("physics",   "chemistry", 31, _SAE_PHYS_9B,  "gemma-2-9b",   -9.5,  -4.6),
+    ("physics",        "math",      31, _SAE_PHYS_9B,  "gemma-2-9b",   -14.2,  -5.6),
+    ("physics",     "biology",   31, _SAE_PHYS_9B,  "gemma-2-9b",  -30.1, -13.6),
+    ("physics",        "code",   31, _SAE_PHYS_9B,  "gemma-2-9b",  -94,   -94),
+    
+    ("code",      "chemistry", 31, _SAE_CODE_9B,  "gemma-2-9b",  -5.0, -5.0),
+    ("code",      "math",      31, _SAE_CODE_9B,  "gemma-2-9b",  -5.0, -5.0),
+    ("code",      "biology",   31, _SAE_CODE_9B,  "gemma-2-9b",  -20.0, -20.0),
+    ("code",      "physics",   31, _SAE_CODE_9B,  "gemma-2-9b",  -5.0, -5.0),
 ]
 
 PAIR_STYLES: dict[tuple[str, str], tuple[str, str]] = {
@@ -210,7 +210,7 @@ FIRING_RATE_THRESHOLDS: dict[tuple[str, str], float] = {
     ("gemma-2-9b",  "chemistry"): 8e-5,
     ("gemma-2-9b",  "math"):      1e-4,
     ("gemma-2-9b",  "physics"):   1e-4,
-    ("gemma-2-9b",  "code"):      1e-4,
+    ("gemma-2-9b",  "code"):      5e-5,
 }
 
 
@@ -576,11 +576,13 @@ def _run_model(
 # Main
 # ---------------------------------------------------------------------------
 
-def run(output_dir: Path, device: torch.device) -> None:
+def run(output_dir: Path, device: torch.device, model_filter: str | None = None) -> None:
     _validate_perf_data(PERF_DATA)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     models = sorted(set(row[4] for row in PERF_DATA))
+    if model_filter:
+        models = [m for m in models if model_filter in m]
     print(f"Device: {device}  |  total pairs: {len(PERF_DATA)}  |  models: {models}")
 
     all_pairs:   list[tuple] = []
@@ -627,8 +629,12 @@ def main() -> None:
         "--device", type=str,
         default="cuda" if torch.cuda.is_available() else "cpu",
     )
+    parser.add_argument(
+        "--model", type=str, default=None,
+        help="Filter to a specific model (substring match, e.g. 'gemma-2-9b').",
+    )
     args = parser.parse_args()
-    run(args.output_dir, torch.device(args.device))
+    run(args.output_dir, torch.device(args.device), model_filter=args.model)
 
 
 if __name__ == "__main__":

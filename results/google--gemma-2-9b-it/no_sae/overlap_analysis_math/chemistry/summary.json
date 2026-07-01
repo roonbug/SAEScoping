@@ -1,0 +1,18 @@
+[
+  {
+    "label": "L31 width_16k",
+    "domain_a": "math",
+    "domain_b": "chemistry",
+    "sae_width": 16384,
+    "n_math_active": 1830,
+    "n_chemistry_active": 2132,
+    "n_overlap": 1379,
+    "overlap_pct_of_math": 75.3551912568306,
+    "overlap_pct_of_chemistry": 64.6810506566604,
+    "mean_chemistry_math_ratio": 0.9688146114349365,
+    "median_chemistry_math_ratio": 0.8792961835861206,
+    "pct_chemistry_dominant": 37.128353879622914,
+    "mean_math_rate": 0.0003787997120525688,
+    "mean_chemistry_rate": 0.0003105102223344147
+  }
+]

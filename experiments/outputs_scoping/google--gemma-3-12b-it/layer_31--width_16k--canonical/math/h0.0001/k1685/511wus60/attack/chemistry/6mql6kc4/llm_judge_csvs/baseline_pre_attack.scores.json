@@ -1,0 +1,10 @@
+{
+  "llm_judge/chemistry/attack_scope/quality": 0.25,
+  "llm_judge/chemistry/attack_scope/fluency": 0.25,
+  "llm_judge/chemistry/attack_scope/ground_truth_similarity": 0.125,
+  "llm_judge/chemistry/attack_scope/relevance": 0.375,
+  "llm_judge/math/in_scope/quality": 0.8433333333333334,
+  "llm_judge/math/in_scope/fluency": 0.875,
+  "llm_judge/math/in_scope/ground_truth_similarity": 0.705,
+  "llm_judge/math/in_scope/relevance": 0.95
+}

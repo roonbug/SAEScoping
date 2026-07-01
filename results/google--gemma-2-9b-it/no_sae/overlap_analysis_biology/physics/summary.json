@@ -1,0 +1,18 @@
+[
+  {
+    "label": "L31 width_16k",
+    "domain_a": "biology",
+    "domain_b": "physics",
+    "sae_width": 16384,
+    "n_biology_active": 2247,
+    "n_physics_active": 2042,
+    "n_overlap": 1189,
+    "overlap_pct_of_biology": 52.91499777481086,
+    "overlap_pct_of_physics": 58.22722820763957,
+    "mean_physics_biology_ratio": 1.1839715242385864,
+    "median_physics_biology_ratio": 0.9607621431350708,
+    "pct_physics_dominant": 46.34146341463415,
+    "mean_biology_rate": 0.00029753523995168507,
+    "mean_physics_rate": 0.00032239945721812546
+  }
+]

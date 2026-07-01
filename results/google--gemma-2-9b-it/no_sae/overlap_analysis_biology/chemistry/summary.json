@@ -1,0 +1,18 @@
+[
+  {
+    "label": "L31 width_16k",
+    "domain_a": "biology",
+    "domain_b": "chemistry",
+    "sae_width": 16384,
+    "n_biology_active": 2247,
+    "n_chemistry_active": 2132,
+    "n_overlap": 1383,
+    "overlap_pct_of_biology": 61.548731642189594,
+    "overlap_pct_of_chemistry": 64.8686679174484,
+    "mean_chemistry_biology_ratio": 1.1598867177963257,
+    "median_chemistry_biology_ratio": 0.9629940986633301,
+    "pct_chemistry_dominant": 45.5531453362256,
+    "mean_biology_rate": 0.00028522187494672835,
+    "mean_chemistry_rate": 0.0003023513127118349
+  }
+]

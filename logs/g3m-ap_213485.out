@@ -1,0 +1,67 @@
+/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/pydantic/_internal/_generate_schema.py:2249: UnsupportedFieldAttributeWarning: The 'repr' attribute with value False was provided to the `Field()` function, which has no effect in the context it was used. 'repr' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
+  warnings.warn(
+/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/pydantic/_internal/_generate_schema.py:2249: UnsupportedFieldAttributeWarning: The 'frozen' attribute with value True was provided to the `Field()` function, which has no effect in the context it was used. 'frozen' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
+  warnings.warn(
+/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/transformers/utils/hub.py:111: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/beartype/_util/hint/pep/utilpeptest.py:339: BeartypeDecorHintPep585DeprecationWarning: PEP 484 type hint typing.Iterator[str] deprecated by PEP 585. This hint is scheduled for removal in the first Python version released after October 5th, 2025. To resolve this, import this hint from "beartype.typing" rather than "typing". For further commentary and alternatives, see also:
+    https://beartype.readthedocs.io/en/latest/api_roar/#pep-585-deprecations
+  warn(
+/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/beartype/_util/hint/pep/utilpeptest.py:339: BeartypeDecorHintPep585DeprecationWarning: PEP 484 type hint typing.Callable[[pandas.core.frame.DataFrame], float] deprecated by PEP 585. This hint is scheduled for removal in the first Python version released after October 5th, 2025. To resolve this, import this hint from "beartype.typing" rather than "typing". For further commentary and alternatives, see also:
+    https://beartype.readthedocs.io/en/latest/api_roar/#pep-585-deprecations
+  warn(
+Loading tokenizer from google/gemma-3-12b-it...
+Downloading checkpoint-2000 from HuggingFace recover repo roonbug/fitoo774...
+Traceback (most recent call last):
+  File "/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 403, in hf_raise_for_status
+    response.raise_for_status()
+  File "/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/requests/models.py", line 1026, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 404 Client Error: Not Found for url: https://huggingface.co/api/models/roonbug/fitoo774/revision/main
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/data/aruna_sankaranarayanan/SAEScoping/experiments/script_scoping_pipeline_stemqa.py", line 1030, in <module>
+    main()
+  File "/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/click/core.py", line 1442, in __call__
+    return self.main(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/click/core.py", line 1363, in main
+    rv = self.invoke(ctx)
+         ^^^^^^^^^^^^^^^^
+  File "/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/click/core.py", line 1226, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/click/core.py", line 794, in invoke
+    return callback(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/aruna_sankaranarayanan/SAEScoping/experiments/script_scoping_pipeline_stemqa.py", line 648, in main
+    local_dir = snapshot_download(
+                ^^^^^^^^^^^^^^^^^^
+  File "/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/huggingface_hub/_snapshot_download.py", line 245, in snapshot_download
+    raise api_call_error
+  File "/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/huggingface_hub/_snapshot_download.py", line 165, in snapshot_download
+    repo_info = api.repo_info(repo_id=repo_id, repo_type=repo_type, revision=revision)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/huggingface_hub/hf_api.py", line 2867, in repo_info
+    return method(
+           ^^^^^^^
+  File "/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/huggingface_hub/hf_api.py", line 2661, in model_info
+    hf_raise_for_status(r)
+  File "/data/aruna_sankaranarayanan/miniconda3/envs/sae/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 453, in hf_raise_for_status
+    raise _format(RepositoryNotFoundError, message, response) from e
+huggingface_hub.errors.RepositoryNotFoundError: 404 Client Error. (Request ID: Root=1-69f62f5e-3d4f234c0c99aac4498b668e;452b3666-899a-4e75-a9f5-6c1dec2b37ac)
+
+Repository Not Found for url: https://huggingface.co/api/models/roonbug/fitoo774/revision/main.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated. For more details, see https://huggingface.co/docs/huggingface_hub/authentication

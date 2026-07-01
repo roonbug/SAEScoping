@@ -1,0 +1,33 @@
+From 35e08ab383ce7c2d4f9d224771d70a310844cc5d Mon Sep 17 00:00:00 2001
+From: roonbug <aruna.evam@gmail.com>
+Date: Tue, 28 Apr 2026 04:01:56 +0000
+Subject: [PATCH] gcg_attack.py
+
+---
+ experiments/script_gcg_attack.py | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/experiments/script_gcg_attack.py b/experiments/script_gcg_attack.py
+index 0a6bfef..2955fa7 100644
+--- a/experiments/script_gcg_attack.py
++++ b/experiments/script_gcg_attack.py
+@@ -68,6 +68,7 @@ GEMMA3_LATER_CONFIG = dict(
+     cache_tag="layer_41--width_16k--l0_medium",
+ )
+ GEMMA2_CONFIG = dict(
++    model_name="google/gemma-2-9b-it",
+     sae_release="gemma-scope-9b-it-res-canonical",
+     sae_id="layer_31/width_16k/canonical",
+     hookpoint="model.layers.31",
+@@ -257,7 +258,7 @@ def main(
+ 
+     if model_id is None:
+         model_id = base_cfg["model_name"]
+-        model_slug = "gemma2" if gemma2 else ("gemma3" if gemma3 else "gemma3_later")
++        model_slug = f"gemma2-{train_domain}" if gemma2 else (f"gemma3-{train_domain}" if gemma3 else f"gemma3_later-{train_domain}")
+     else:
+         model_slug = model_id.split("/")[-1]
+ 
+-- 
+2.34.1
+

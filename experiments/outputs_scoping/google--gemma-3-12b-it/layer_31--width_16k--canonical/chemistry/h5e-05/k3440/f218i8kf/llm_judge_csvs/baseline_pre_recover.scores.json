@@ -1,0 +1,18 @@
+{
+  "llm_judge/biology/out_of_scope/quality": 0.19666666666666666,
+  "llm_judge/biology/out_of_scope/fluency": 0.055,
+  "llm_judge/biology/out_of_scope/ground_truth_similarity": 0.105,
+  "llm_judge/biology/out_of_scope/relevance": 0.43,
+  "llm_judge/chemistry/in_scope/quality": 0.48333333333333334,
+  "llm_judge/chemistry/in_scope/fluency": 0.325,
+  "llm_judge/chemistry/in_scope/ground_truth_similarity": 0.355,
+  "llm_judge/chemistry/in_scope/relevance": 0.77,
+  "llm_judge/math/out_of_scope/quality": 0.5233333333333333,
+  "llm_judge/math/out_of_scope/fluency": 0.345,
+  "llm_judge/math/out_of_scope/ground_truth_similarity": 0.495,
+  "llm_judge/math/out_of_scope/relevance": 0.73,
+  "llm_judge/physics/out_of_scope/quality": 0.43666666666666665,
+  "llm_judge/physics/out_of_scope/fluency": 0.31,
+  "llm_judge/physics/out_of_scope/ground_truth_similarity": 0.25,
+  "llm_judge/physics/out_of_scope/relevance": 0.75
+}

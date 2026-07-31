@@ -51,7 +51,7 @@ from trl import SFTConfig
 import tqdm
 import sys
 import os
-sys.path.append(os.path.abspath(".."))
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 from functools import partial
 from sae_scoping.trainers.sae_enhanced.prune import get_pruned_sae
 from sae_scoping.trainers.sae_enhanced.rank import rank_neurons
@@ -174,21 +174,21 @@ class _HfCheckpointCallback(TrainerCallback):
             sys.exit(f"ERROR: {len(still_failed)} checkpoint(s) could not be uploaded after retry: {still_failed}")
 
 # ── Model configs ─────────────────────────────────────────────────────────────
-GEMMA3_CONFIG = dict(
-    model_name="google/gemma-3-12b-it",
-    sae_release="gemma-scope-2-12b-it-res",
-    sae_id="layer_31_width_16k_l0_medium",
-    hookpoint="model.language_model.layers.31",
-    cache_tag="layer_31--width_16k--canonical",
-)
-
 # GEMMA3_CONFIG = dict(
 #     model_name="google/gemma-3-12b-it",
-#     sae_release="gemma-scope-2-12b-it-res-all",
-#     sae_id="layer_39_width_262k_l0_small",
-#     hookpoint="model.language_model.layers.39",
-#     cache_tag="layer_39--width_262k--canonical",
+#     sae_release="gemma-scope-2-12b-it-res",
+#     sae_id="layer_31_width_16k_l0_medium",
+#     hookpoint="model.language_model.layers.31",
+#     cache_tag="layer_31--width_16k--canonical",
 # )
+
+GEMMA3_CONFIG = dict(
+    model_name="google/gemma-3-12b-it",
+    sae_release="gemma-scope-2-12b-it-res-all",
+    sae_id="layer_40_width_262k_l0_small",
+    hookpoint="model.language_model.layers.40",
+    cache_tag="layer_40--width_262k--canonical",
+)
 GEMMA2_CONFIG = dict(
     model_name="google/gemma-2-9b-it",
     sae_release="gemma-scope-9b-it-res-canonical",
@@ -452,6 +452,7 @@ def stage_train(
     batch_size: int,
     accum: int,
     save_every: int,
+    save_total_limit: int = 5,
     training_callbacks=None,
     all_layers_after_hookpoint: bool = False,
     resume_from_checkpoint: bool | str = True,
@@ -459,6 +460,11 @@ def stage_train(
     assistant_only_loss: bool = False,
 ):
     """Stage 3/4: SFT with pruned SAE (or SparseCoder) in the loop."""
+    # TRL 0.22+ blocks assistant_only_loss for VLMs (e.g. Gemma-3 which has a vision tower).
+    # Fall back to full-sequence loss for those models.
+    if assistant_only_loss and getattr(model.config, "model_type", "") == "gemma3":
+        assistant_only_loss = False
+
     if isinstance(pruned_sae, SparseCoder):
         _sparse_stage_train(
             train_dataset=train_dataset,
@@ -499,7 +505,7 @@ def stage_train(
         eval_steps=100,
         save_steps=save_every,
         bf16=True,
-        save_total_limit=5,
+        save_total_limit=save_total_limit,
         report_to="wandb",
         max_length=max_seq_length,
         dataset_text_field="messages" if assistant_only_loss else "text",
@@ -784,6 +790,11 @@ def main(
             base_dir / "outputs_scoping" / model_slug / cache_tag / train_domain
             / "domain_sae" / f"dh{n_kept}"
         )
+    elif no_sae_hook:
+        n_kept = 0
+        output_base = Path(output_dir) if output_dir else (
+            base_dir / "outputs_scoping" / model_slug / cache_tag / train_domain / "no_sae_hook"
+        )
     elif _dist_cache_path.exists():
         _pre = load_file(str(_dist_cache_path))
         n_kept = int((_pre["distribution"] >= firing_rate_threshold).sum().item())
@@ -925,9 +936,9 @@ def main(
     if _train_batch_size != batch_size:
         print(f"Coding domain: overriding train/attack batch_size {batch_size} → 1 (8192-token sequences)")
 
-    # ── Stage 1: RANK (skipped when --domain-sae-path is set) ────────────────
+    # ── Stage 1: RANK (skipped when --domain-sae-path is set or --no-sae-hook) ─
     ranking, distribution = None, None
-    if domain_sae_path is None:
+    if domain_sae_path is None and not no_sae_hook:
         if "rank" in stages:
             ranking, distribution = stage_rank(
                 train_dataset=train_ds,
@@ -952,7 +963,7 @@ def main(
             ranking, distribution = data["ranking"], data["distribution"]
 
     # ── Finalise n_kept and output_base ───────────────────────────────────────
-    if domain_sae_path is None:
+    if domain_sae_path is None and not no_sae_hook:
         n_kept = int((distribution >= firing_rate_threshold).sum().item())
     if output_dir:
         output_base = Path(output_dir)
@@ -996,7 +1007,9 @@ def main(
         _recover_eval_questions = {k: v for k, v in domain_questions.items() if k == train_domain}
         _recover_eval_answers = {k: v for k, v in domain_answers.items() if k == train_domain}
 
-    if domain_sae_path is not None:
+    if no_sae_hook:
+        recover_run_name = f"recover/{model_slug}/{cache_tag}/{train_domain}/no_sae_hook"
+    elif domain_sae_path is not None:
         recover_run_name = f"recover/{model_slug}/{cache_tag}/{train_domain}/domain_sae/dh{n_kept}"
     else:
         recover_run_name = f"recover/{model_slug}/{cache_tag}/{train_domain}/h{firing_rate_threshold}/k{n_kept}"
@@ -1031,9 +1044,12 @@ def main(
             domain_generation_kwargs=_domain_gen_kwargs,
         )
 
-    # ── Stage 2: PRUNE (skipped when --domain-sae-path is set) ───────────────
+    # ── Stage 2: PRUNE (skipped when --domain-sae-path is set or --no-sae-hook) ─
     raw_sae = None
-    if domain_sae_path is not None:
+    if no_sae_hook:
+        pruned_sae = None
+        print("--no-sae-hook set: skipping SAE load and pruning entirely.")
+    elif domain_sae_path is not None:
         pruned_sae = _load_sae_from_cache(Path(domain_sae_path), device)
         print(f"Loaded SparseCoder from {domain_sae_path} (num_latents={pruned_sae.num_latents})")
     else:
@@ -1105,6 +1121,7 @@ def main(
             batch_size=_train_batch_size,
             accum=accum,
             save_every=save_every,
+            save_total_limit=1 if (use_gemma3 or later_gemma3) else 5,
             training_callbacks=[llm_judge_callback, recover_hf_cb],
             resume_from_checkpoint=recover_resume_from_checkpoint,
             all_layers_after_hookpoint=all_layers_recover,
@@ -1215,6 +1232,7 @@ def main(
             batch_size=_attack_batch_size,
             accum=accum,
             save_every=save_every,
+            save_total_limit=1 if (use_gemma3 or later_gemma3) else 5,
             training_callbacks=[attack_llm_judge_callback, attack_hf_cb],
             all_layers_after_hookpoint=True,
             resume_from_checkpoint=attack_resume_from_checkpoint,
